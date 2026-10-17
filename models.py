@@ -1,4 +1,3 @@
-
 from datetime import datetime, timezone
 
 from flask_login import UserMixin
@@ -8,14 +7,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 db = SQLAlchemy()
 
 
-
 class User(UserMixin, db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(120), nullable=False)
 
-    # National ID will be the login identifier.
+    # National ID is the login identifier.
     # Nullable temporarily to support existing accounts during migration.
     national_id = db.Column(
         db.String(20),
@@ -53,14 +51,23 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+
 class ServiceRequest(db.Model):
     __tablename__ = "service_requests"
 
     id = db.Column(db.Integer, primary_key=True)
-    tracking_code = db.Column(db.String(30), unique=True, nullable=False, index=True)
+    tracking_code = db.Column(
+        db.String(30), unique=True, nullable=False, index=True
+    )
     title = db.Column(db.String(150), nullable=False)
     category = db.Column(db.String(80), nullable=False)
+    location = db.Column(db.String(250), nullable=False)
     description = db.Column(db.Text, nullable=False)
+
+    # Persistent URL for an optional uploaded image.
+    # Store images in a persistent provider, not Vercel's local filesystem.
+    image_url = db.Column(db.String(1000), nullable=True)
+
     status = db.Column(db.String(30), nullable=False, default="Submitted")
     staff_notes = db.Column(db.Text, nullable=True)
     created_at = db.Column(

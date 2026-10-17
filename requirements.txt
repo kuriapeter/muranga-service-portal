@@ -7,3 +7,4 @@ psycopg[binary]
 python-dotenv
 email-validator
 Flask-Mail==0.9.1
+cloudinary>=1.40,<2.0

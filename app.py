@@ -3,6 +3,9 @@ import os
 import secrets
 import string
 
+import cloudinary
+import cloudinary.uploader
+
 from flask import (
     Flask, render_template, redirect, url_for,
     request, flash, abort
@@ -14,6 +17,7 @@ from flask_login import (
 from flask_mail import Mail, Message
 from flask_wtf.csrf import CSRFProtect
 from sqlalchemy.exc import IntegrityError
+from werkzeug.utils import secure_filename
 
 from config import Config
 from models import db, User, ServiceRequest
@@ -32,6 +36,19 @@ app.config["MAIL_DEFAULT_SENDER"] = (
 )
 
 mail = Mail(app)
+
+# Uploaded evidence photos must use persistent cloud storage on Vercel.
+# Configure these three environment variables locally and in Vercel.
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True,
+)
+
+MAX_IMAGE_BYTES = 5 * 1024 * 1024
+ALLOWED_IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
+app.config["MAX_CONTENT_LENGTH"] = MAX_IMAGE_BYTES + (256 * 1024)
 # Use SQLite locally until Neon is configured.
 # On Vercel, set DATABASE_URL to your Neon PostgreSQL connection URL.
 
@@ -205,18 +222,79 @@ def new_request():
     if request.method == "POST":
         title = request.form.get("title", "").strip()
         category = request.form.get("category", "").strip()
+        location = request.form.get("location", "").strip()
         description = request.form.get("description", "").strip()
+        image = request.files.get("image")
 
-        if not title or not description or category not in categories:
-            flash("Please complete all fields and choose a valid category.", "danger")
+        if not title or not location or not description or category not in categories:
+            flash("Please complete all required fields and choose a valid category.", "danger")
         elif len(title) > 150:
             flash("The request title must be 150 characters or fewer.", "danger")
+        elif len(location) > 250:
+            flash("The location must be 250 characters or fewer.", "danger")
+        elif image and image.filename:
+            filename = secure_filename(image.filename)
+            extension = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+            if extension not in ALLOWED_IMAGE_EXTENSIONS:
+                flash("Upload an image in JPG, JPEG, PNG, or WEBP format.", "danger")
+            else:
+                image_url = None
+                try:
+                    # Cloudinary is persistent; Vercel's local filesystem is not.
+                    if not all([
+                        os.getenv("CLOUDINARY_CLOUD_NAME"),
+                        os.getenv("CLOUDINARY_API_KEY"),
+                        os.getenv("CLOUDINARY_API_SECRET"),
+                    ]):
+                        raise RuntimeError("Cloud image storage is not configured.")
+
+                    image.stream.seek(0, os.SEEK_END)
+                    image_size = image.stream.tell()
+                    image.stream.seek(0)
+                    if image_size > MAX_IMAGE_BYTES:
+                        flash("The image must be 5 MB or smaller.", "danger")
+                    else:
+                        uploaded = cloudinary.uploader.upload(
+                            image.stream,
+                            folder="muranga-service-portal",
+                            resource_type="image",
+                            allowed_formats=list(ALLOWED_IMAGE_EXTENSIONS),
+                        )
+                        image_url = uploaded.get("secure_url")
+                        service_request = ServiceRequest(
+                            tracking_code=generate_tracking_code(),
+                            title=title,
+                            category=category,
+                            location=location,
+                            description=description,
+                            image_url=image_url,
+                            status="Submitted",
+                            user_id=current_user.id,
+                        )
+                        db.session.add(service_request)
+                        db.session.commit()
+                        flash(
+                            f"Request submitted. Your tracking code is "
+                            f"{service_request.tracking_code}.",
+                            "success",
+                        )
+                        return redirect(url_for("dashboard"))
+                except Exception:
+                    db.session.rollback()
+                    app.logger.exception("Could not upload evidence image or save request")
+                    flash(
+                        "The request could not be submitted with that image. "
+                        "Please try again or submit without an image.",
+                        "danger",
+                    )
         else:
             service_request = ServiceRequest(
                 tracking_code=generate_tracking_code(),
                 title=title,
                 category=category,
+                location=location,
                 description=description,
+                image_url=None,
                 status="Submitted",
                 user_id=current_user.id,
             )

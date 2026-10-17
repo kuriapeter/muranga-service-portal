@@ -1,4 +1,4 @@
-
+```html
 {% extends "base.html" %}
 
 {% block content %}
@@ -55,8 +55,26 @@
                     Category: {{ service_request.category }}
                 </p>
 
-                <h6 class="fw-bold">Description</h6>
+                <h6 class="fw-bold">Location of Issue</h6>
+                <p>{{ service_request.location or 'Not provided' }}</p>
+
+                <h6 class="fw-bold mt-4">Description</h6>
                 <p style="white-space: pre-wrap;">{{ service_request.description }}</p>
+
+                {% if service_request.image_url %}
+                    <hr>
+                    <h6 class="fw-bold">Evidence Photo</h6>
+                    <a href="{{ service_request.image_url }}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        <img
+                            src="{{ service_request.image_url }}"
+                            alt="Evidence for this service request"
+                            class="img-fluid rounded shadow-sm"
+                            style="max-width: 100%; max-height: 450px; object-fit: contain;"
+                            loading="lazy">
+                    </a>
+                {% endif %}
 
                 <hr>
 
@@ -103,3 +121,4 @@
     </div>
 </div>
 {% endblock %}
+```

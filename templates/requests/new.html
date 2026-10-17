@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 {% block content %}
@@ -13,7 +12,9 @@
                     Submit an issue or request to the county.
                 </p>
 
-                <form method="POST" action="{{ url_for('new_request') }}">
+                <form method="POST"
+                      action="{{ url_for('new_request') }}"
+                      enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token"
                            value="{{ csrf_token() }}">
 
@@ -43,13 +44,40 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="location" class="form-label">
+                            Location
+                        </label>
+                        <input type="text" id="location" name="location"
+                               class="form-control" maxlength="250"
+                               placeholder="e.g. Kenol, near the main market"
+                               required>
+                        <div class="form-text">
+                            Enter the estate, village, road, landmark, or
+                            other place where the issue is located.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="description" class="form-label">
                             Description
                         </label>
                         <textarea id="description" name="description"
                                   class="form-control" rows="5"
-                                  placeholder="Describe the issue and its location..."
+                                  placeholder="Describe the issue in detail..."
                                   required></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="image" class="form-label">
+                            Attach a photo <span class="text-muted">(optional)</span>
+                        </label>
+                        <input type="file" id="image" name="image"
+                               class="form-control"
+                               accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+                        <div class="form-text">
+                            Accepted formats: JPG, PNG, or WEBP. Maximum
+                            size: 5 MB.
+                        </div>
                     </div>
 
                     <div class="d-flex gap-2">
