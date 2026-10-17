@@ -1,0 +1,8 @@
+
+Flask
+Flask-SQLAlchemy
+Flask-Login
+Flask-WTF
+psycopg[binary]
+python-dotenv
+email-validator
