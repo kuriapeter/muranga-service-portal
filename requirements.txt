@@ -6,3 +6,4 @@ Flask-WTF
 psycopg[binary]
 python-dotenv
 email-validator
+Flask-Mail==0.9.1

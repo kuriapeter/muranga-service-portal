@@ -11,6 +11,7 @@ from flask_login import (
     LoginManager, current_user, login_user,
     logout_user, login_required
 )
+from flask_mail import Mail, Message
 from flask_wtf.csrf import CSRFProtect
 from sqlalchemy.exc import IntegrityError
 
@@ -20,7 +21,15 @@ from models import db, User, ServiceRequest
 
 app = Flask(__name__)
 app.config.from_object(Config)
+app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+app.config["MAIL_PORT"] = int(os.getenv("MAIL_PORT", "587"))
+app.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS", "True").lower() == "true"
+app.config["MAIL_USE_SSL"] = False
+app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
+app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
+app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER")
 
+mail = Mail(app)
 # Use SQLite locally until Neon is configured.
 # On Vercel, set DATABASE_URL to your Neon PostgreSQL connection URL.
 
@@ -343,6 +352,7 @@ def track_request():
     )
 
 
+
 @app.route("/admin/requests/<int:request_id>/update", methods=["POST"])
 @login_required
 def update_request(request_id):
@@ -363,14 +373,63 @@ def update_request(request_id):
 
     if status not in allowed_statuses:
         flash("Please choose a valid status.", "danger")
+        return redirect(url_for("admin_dashboard"))
+
+    old_status = service_request.status
+    status_changed = status != old_status
+
+    # Preserve the existing status and staff-notes update.
+    service_request.status = status
+    service_request.staff_notes = staff_notes or None
+    db.session.commit()
+
+    # Email only when the status changes.
+    if status_changed:
+        try:
+            recipient = service_request.user.email
+
+            if recipient:
+                message = Message(
+                    subject=f"Service Request Update: {status}",
+                    recipients=[recipient],
+                    body=(
+                        "Hello,\n\n"
+                        "There is an update to your Murang'a County "
+                        "Public Service Request.\n\n"
+                        f"Request: {service_request.title}\n"
+                        f"Tracking code: {service_request.tracking_code}\n"
+                        f"Previous status: {old_status}\n"
+                        f"New status: {status}\n\n"
+                        "Please use your tracking code on the portal "
+                        "to check your request.\n\n"
+                        "Murang'a County Public Service Request System"
+                    ),
+                )
+                mail.send(message)
+                flash(
+                    "Request updated and notification email sent.",
+                    "success",
+                )
+            else:
+                flash(
+                    "Request updated, but the citizen has no email address.",
+                    "warning",
+                )
+
+        except Exception:
+            app.logger.exception(
+                "Failed to send status notification for request %s",
+                service_request.id,
+            )
+            flash(
+                "Request updated, but the notification email could not "
+                "be sent. Check the application logs.",
+                "warning",
+            )
     else:
-        service_request.status = status
-        service_request.staff_notes = staff_notes or None
-        db.session.commit()
         flash("Request updated successfully.", "success")
 
     return redirect(url_for("admin_dashboard"))
-
 
 # Create the initial database tables if they do not exist.
 # For production schema changes, use Flask-Migrate.
