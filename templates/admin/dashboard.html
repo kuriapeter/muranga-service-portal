@@ -1,0 +1,139 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="py-4">
+    <div class="mb-4">
+        <h1 class="fw-bold text-primary">Administration Dashboard</h1>
+        <p class="text-muted">
+            Review citizen requests and update their progress.
+        </p>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total Requests</p>
+                    <h2>{{ service_requests|length }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Pending Review</p>
+                    <h2 class="text-warning">
+                        {{ service_requests|selectattr('status', 'in',
+                        ['Submitted', 'Under Review'])|list|length }}
+                    </h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Resolved Requests</p>
+                    <h2 class="text-success">
+                        {{ service_requests|selectattr('status', 'equalto',
+                        'Resolved')|list|length }}
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0">All Citizen Requests</h5>
+        </div>
+
+        <div class="card-body">
+            {% if service_requests %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tracking Code</th>
+                            <th>Citizen</th>
+                            <th>Request</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Update Request</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in service_requests %}
+                        <tr>
+                            <td>
+                                <strong>{{ item.tracking_code }}</strong>
+                            </td>
+                            <td>{{ item.user.full_name }}</td>
+                            <td>
+                                <a href="{{ url_for('view_request', request_id=item.id) }}">
+                                    {{ item.title }}
+                                </a>
+                            </td>
+                            <td>{{ item.category }}</td>
+                            <td>
+                                <span class="badge
+                                    {% if item.status == 'Resolved' %}bg-success
+                                    {% elif item.status == 'Rejected' %}bg-danger
+                                    {% elif item.status == 'In Progress' %}bg-primary
+                                    {% else %}bg-warning text-dark{% endif %}">
+                                    {{ item.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <form method="POST"
+                                      action="{{ url_for('update_request', request_id=item.id) }}">
+                                    <input type="hidden" name="csrf_token"
+                                           value="{{ csrf_token() }}">
+
+                                    <select name="status"
+                                            class="form-select form-select-sm mb-2"
+                                            required>
+                                        {% for status in [
+                                            'Submitted',
+                                            'Under Review',
+                                            'In Progress',
+                                            'Resolved',
+                                            'Rejected'
+                                        ] %}
+                                        <option value="{{ status }}"
+                                            {% if item.status == status %}selected{% endif %}>
+                                            {{ status }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <textarea name="staff_notes"
+                                              class="form-control form-control-sm mb-2"
+                                              rows="2"
+                                              placeholder="Staff notes...">{{ item.staff_notes or '' }}</textarea>
+
+                                    <button type="submit"
+                                            class="btn btn-primary btn-sm">
+                                        Save Update
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <h5>No service requests yet</h5>
+                <p class="text-muted">
+                    Citizen requests will appear here when submitted.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

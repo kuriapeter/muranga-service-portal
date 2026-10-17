@@ -23,6 +23,7 @@ app.config.from_object(Config)
 
 # Use SQLite locally until Neon is configured.
 # On Vercel, set DATABASE_URL to your Neon PostgreSQL connection URL.
+
 if not app.config.get("SQLALCHEMY_DATABASE_URI"):
     if not os.getenv("VERCEL"):
         os.makedirs(app.instance_path, exist_ok=True)
@@ -81,32 +82,45 @@ def register():
 
     if request.method == "POST":
         full_name = request.form.get("full_name", "").strip()
+        national_id = request.form.get("national_id", "").strip()
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
         confirm_password = request.form.get("confirm_password", "")
 
-        if not full_name or not email or not password:
+        if not full_name or not national_id or not email or not password:
             flash("Please complete all required fields.", "danger")
-        elif len(full_name) > 120 or len(email) > 150:
-            flash("Your name or email is too long.", "danger")
+        elif len(full_name) > 120 or len(national_id) > 20 or len(email) > 150:
+            flash("One or more fields exceed the allowed length.", "danger")
+        elif not national_id.isdigit():
+            flash("Enter a valid National ID using digits only.", "danger")
         elif len(password) < 8:
             flash("Your password must be at least 8 characters.", "danger")
         elif password != confirm_password:
             flash("The passwords do not match.", "danger")
+        elif User.query.filter_by(national_id=national_id).first():
+            flash("An account with that National ID already exists.", "warning")
         elif User.query.filter_by(email=email).first():
             flash("An account with that email already exists.", "warning")
         else:
-            user = User(full_name=full_name, email=email, role="citizen")
+            user = User(
+                full_name=full_name,
+                national_id=national_id,
+                email=email,
+                role="citizen",
+            )
             user.set_password(password)
             db.session.add(user)
 
             try:
                 db.session.commit()
-                flash("Account created. You can now log in.", "success")
+                flash("Account created. Log in using your National ID.", "success")
                 return redirect(url_for("login"))
             except IntegrityError:
                 db.session.rollback()
-                flash("That email may already be registered.", "warning")
+                flash(
+                    "That National ID or email may already be registered.",
+                    "warning",
+                )
 
     return render_template("register.html", page_title="Register")
 
@@ -117,25 +131,28 @@ def login():
         return redirect(url_for("dashboard"))
 
     if request.method == "POST":
-        email = request.form.get("email", "").strip().lower()
+        national_id = request.form.get("national_id", "").strip()
         password = request.form.get("password", "")
-        user = User.query.filter_by(email=email).first()
+
+        user = User.query.filter_by(national_id=national_id).first()
 
         if user and user.check_password(password):
             login_user(user)
             flash("Welcome back!", "success")
             next_page = request.args.get("next")
 
-            # Only allow local relative redirects.
-            if next_page and next_page.startswith("/") and not next_page.startswith("//"):
+            if (
+                next_page
+                and next_page.startswith("/")
+                and not next_page.startswith("//")
+            ):
                 return redirect(next_page)
 
             return redirect(url_for("dashboard"))
 
-        flash("Invalid email or password.", "danger")
+        flash("Invalid National ID or password.", "danger")
 
     return render_template("login.html", page_title="Login")
-
 
 @app.route("/logout", methods=["POST"])
 @login_required

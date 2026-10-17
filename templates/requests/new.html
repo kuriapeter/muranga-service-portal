@@ -1,0 +1,69 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="fw-bold text-primary mb-2">
+                    New Service Request
+                </h2>
+                <p class="text-muted">
+                    Submit an issue or request to the county.
+                </p>
+
+                <form method="POST" action="{{ url_for('new_request') }}">
+                    <input type="hidden" name="csrf_token"
+                           value="{{ csrf_token() }}">
+
+                    <div class="mb-3">
+                        <label for="title" class="form-label">
+                            Request Title
+                        </label>
+                        <input type="text" id="title" name="title"
+                               class="form-control" maxlength="150"
+                               placeholder="e.g. Repair a damaged road"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="category" class="form-label">
+                            Category
+                        </label>
+                        <select id="category" name="category"
+                                class="form-select" required>
+                            <option value="">Choose a category</option>
+                            {% for category in categories %}
+                            <option value="{{ category }}">
+                                {{ category }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">
+                            Description
+                        </label>
+                        <textarea id="description" name="description"
+                                  class="form-control" rows="5"
+                                  placeholder="Describe the issue and its location..."
+                                  required></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            Submit Request
+                        </button>
+                        <a href="{{ url_for('dashboard') }}"
+                           class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

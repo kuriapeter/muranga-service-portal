@@ -16,12 +16,14 @@
                            value="{{ csrf_token() }}">
 
                     <div class="mb-3">
-                        <label for="email" class="form-label">
-                            Email Address
+                        <label for="national_id" class="form-label">
+                            National ID Number
                         </label>
-                        <input type="email" class="form-control"
-                               id="email" name="email"
-                               autocomplete="email" required>
+                        <input type="text" class="form-control"
+                               id="national_id" name="national_id"
+                               maxlength="20" inputmode="numeric"
+                               pattern="[0-9]+"
+                               autocomplete="off" required>
                     </div>
 
                     <div class="mb-4">

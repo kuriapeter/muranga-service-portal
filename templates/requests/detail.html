@@ -1,0 +1,105 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold text-primary">Request Details</h2>
+                <p class="text-muted mb-0">
+                    View the progress of your county service request.
+                </p>
+            </div>
+            <a href="{{ url_for('dashboard') }}"
+               class="btn btn-outline-secondary">
+                Back to Dashboard
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+
+                <div class="d-flex flex-wrap justify-content-between gap-3 mb-4">
+                    <div>
+                        <p class="text-muted mb-1">Tracking Code</p>
+                        <h5 class="fw-bold text-primary">
+                            {{ service_request.tracking_code }}
+                        </h5>
+                    </div>
+
+                    <div>
+                        <p class="text-muted mb-1">Current Status</p>
+                        {% if service_request.status == 'Resolved' %}
+                            <span class="badge bg-success fs-6">Resolved</span>
+                        {% elif service_request.status == 'Rejected' %}
+                            <span class="badge bg-danger fs-6">Rejected</span>
+                        {% elif service_request.status == 'In Progress' %}
+                            <span class="badge bg-primary fs-6">In Progress</span>
+                        {% elif service_request.status == 'Under Review' %}
+                            <span class="badge bg-info text-dark fs-6">Under Review</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark fs-6">
+                                {{ service_request.status }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <hr>
+
+                <h4 class="fw-bold">{{ service_request.title }}</h4>
+
+                <p class="text-muted mb-4">
+                    Category: {{ service_request.category }}
+                </p>
+
+                <h6 class="fw-bold">Description</h6>
+                <p style="white-space: pre-wrap;">{{ service_request.description }}</p>
+
+                <hr>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <p class="text-muted mb-1">Date Submitted</p>
+                        <p class="fw-semibold">
+                            {% if service_request.created_at %}
+                                {{ service_request.created_at.strftime('%d %b %Y, %I:%M %p') }}
+                            {% else %}
+                                Not available
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <p class="text-muted mb-1">Last Updated</p>
+                        <p class="fw-semibold">
+                            {% if service_request.updated_at %}
+                                {{ service_request.updated_at.strftime('%d %b %Y, %I:%M %p') }}
+                            {% else %}
+                                Not available
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h6 class="fw-bold">Staff Notes</h6>
+                {% if service_request.staff_notes %}
+                    <div class="alert alert-light border">
+                        {{ service_request.staff_notes }}
+                    </div>
+                {% else %}
+                    <p class="text-muted">
+                        No staff notes have been added yet.
+                    </p>
+                {% endif %}
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

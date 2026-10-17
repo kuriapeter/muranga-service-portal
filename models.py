@@ -8,14 +8,33 @@ from werkzeug.security import generate_password_hash, check_password_hash
 db = SQLAlchemy()
 
 
+
 class User(UserMixin, db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(120), nullable=False)
-    email = db.Column(db.String(150), unique=True, nullable=False, index=True)
+
+    # National ID will be the login identifier.
+    # Nullable temporarily to support existing accounts during migration.
+    national_id = db.Column(
+        db.String(20),
+        unique=True,
+        nullable=True,
+        index=True,
+    )
+
+    # Keep email for contact and account recovery.
+    email = db.Column(
+        db.String(150),
+        unique=True,
+        nullable=False,
+        index=True,
+    )
+
     password_hash = db.Column(db.String(256), nullable=False)
     role = db.Column(db.String(20), nullable=False, default="citizen")
+
     created_at = db.Column(
         db.DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
@@ -33,7 +52,6 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-
 
 class ServiceRequest(db.Model):
     __tablename__ = "service_requests"
