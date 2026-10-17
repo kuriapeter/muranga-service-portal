@@ -24,10 +24,11 @@ app.config.from_object(Config)
 # Use SQLite locally until Neon is configured.
 # On Vercel, set DATABASE_URL to your Neon PostgreSQL connection URL.
 if not app.config.get("SQLALCHEMY_DATABASE_URI"):
-    os.makedirs(app.instance_path, exist_ok=True)
-    app.config["SQLALCHEMY_DATABASE_URI"] = (
-        "sqlite:///" + os.path.join(app.instance_path, "portal.db")
-    )
+    if not os.getenv("VERCEL"):
+        os.makedirs(app.instance_path, exist_ok=True)
+        app.config["SQLALCHEMY_DATABASE_URI"] = (
+            "sqlite:///" + os.path.join(app.instance_path, "portal.db")
+        )
 
 # Normalize PostgreSQL URLs for the psycopg driver.
 database_url = app.config["SQLALCHEMY_DATABASE_URI"]
