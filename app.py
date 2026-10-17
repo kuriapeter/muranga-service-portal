@@ -27,7 +27,9 @@ app.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS", "True").lower() == "true"
 app.config["MAIL_USE_SSL"] = False
 app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
 app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
-app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER")
+app.config["MAIL_DEFAULT_SENDER"] = (
+    os.getenv("MAIL_DEFAULT_SENDER") or os.getenv("MAIL_USERNAME")
+)
 
 mail = Mail(app)
 # Use SQLite locally until Neon is configured.
@@ -389,9 +391,14 @@ def update_request(request_id):
             recipient = service_request.user.email
 
             if recipient:
+                sender = (
+                    app.config.get("MAIL_DEFAULT_SENDER")
+                    or app.config.get("MAIL_USERNAME")
+                )
                 message = Message(
                     subject=f"Service Request Update: {status}",
                     recipients=[recipient],
+                    sender=sender,
                     body=(
                         "Hello,\n\n"
                         "There is an update to your Murang'a County "
