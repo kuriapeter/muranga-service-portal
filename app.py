@@ -313,6 +313,35 @@ def admin_dashboard():
     )
 
 
+@app.route("/track", methods=["GET", "POST"])
+def track_request():
+    service_request = None
+    tracking_code = ""
+
+    if request.method == "POST":
+        tracking_code = request.form.get("tracking_code", "").strip().upper()
+
+        if not tracking_code:
+            flash("Please enter your tracking code.", "warning")
+        else:
+            service_request = ServiceRequest.query.filter_by(
+                tracking_code=tracking_code
+            ).first()
+
+            if service_request is None:
+                flash(
+                    "No request was found with that tracking code. "
+                    "Please check the code and try again.",
+                    "warning",
+                )
+
+    return render_template(
+        "track.html",
+        page_title="Track a Service Request",
+        service_request=service_request,
+        tracking_code=tracking_code,
+    )
+
 
 @app.route("/admin/requests/<int:request_id>/update", methods=["POST"])
 @login_required

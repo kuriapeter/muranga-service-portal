@@ -1,0 +1,129 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-xl-6">
+            <div class="text-center mb-4">
+                <div class="display-5 text-primary mb-3">
+                    <i class="bi bi-search"></i>
+                </div>
+                <h1 class="fw-bold">Track Your Request</h1>
+                <p class="text-muted">
+                    Enter the tracking code you received when submitting
+                    your public service request.
+                </p>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('track_request') }}">
+                        <input type="hidden" name="csrf_token"
+                               value="{{ csrf_token() }}">
+
+                        <label for="tracking_code" class="form-label fw-semibold">
+                            Request Tracking Code
+                        </label>
+
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control"
+                                   id="tracking_code"
+                                   name="tracking_code"
+                                   value="{{ tracking_code }}"
+                                   placeholder="e.g. MUR-ICXHYUX0FY"
+                                   maxlength="30"
+                                   autocomplete="off"
+                                   required>
+                            <button class="btn btn-primary" type="submit">
+                                Track Request
+                            </button>
+                        </div>
+
+                        <div class="form-text">
+                            Check the code carefully before submitting.
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% if service_request %}
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">Request Details</h5>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="mb-3">
+                        <div class="text-muted small">Tracking Code</div>
+                        <div class="fw-bold">{{ service_request.tracking_code }}</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="text-muted small">Request Title</div>
+                        <div class="fw-semibold">{{ service_request.title }}</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="text-muted small">Category</div>
+                        <div>{{ service_request.category }}</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="text-muted small">Current Status</div>
+                        <span class="badge fs-6
+                            {% if service_request.status == 'Resolved' %}text-bg-success
+                            {% elif service_request.status == 'Rejected' %}text-bg-danger
+                            {% elif service_request.status == 'In Progress' %}text-bg-primary
+                            {% elif service_request.status == 'Under Review' %}text-bg-info
+                            {% else %}text-bg-warning{% endif %}">
+                            {{ service_request.status }}
+                        </span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="text-muted small">Date Submitted</div>
+                            <div>
+                                {{ service_request.created_at.strftime('%d %b %Y, %H:%M') if service_request.created_at else 'Not available' }}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="text-muted small">Last Updated</div>
+                            <div>
+                                {{ service_request.updated_at.strftime('%d %b %Y, %H:%M') if service_request.updated_at else 'Not available' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if service_request.status == 'Resolved' %}
+                    <div class="alert alert-success mt-4 mb-0">
+                        Your request has been marked as resolved.
+                    </div>
+                    {% elif service_request.status == 'Rejected' %}
+                    <div class="alert alert-danger mt-4 mb-0">
+                        Your request has been marked as rejected.
+                        Please contact the relevant county office for guidance.
+                    </div>
+                    {% elif service_request.status == 'In Progress' %}
+                    <div class="alert alert-primary mt-4 mb-0">
+                        Your request is being processed.
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info mt-4 mb-0">
+                        Your request is awaiting review or further processing.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <p class="text-center text-muted small mt-4">
+                Keep your tracking code private. For assistance, contact
+                the relevant county service office.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
