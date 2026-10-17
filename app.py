@@ -243,21 +243,75 @@ def view_request(request_id):
     )
 
 
+
 @app.route("/admin")
 @login_required
 def admin_dashboard():
     if current_user.role != "admin":
         abort(403)
 
+    from datetime import date, timedelta
+
     requests_list = ServiceRequest.query.order_by(
         ServiceRequest.created_at.desc()
     ).all()
+
+    # Request counts by status
+    statuses = [
+        "Submitted",
+        "Under Review",
+        "In Progress",
+        "Resolved",
+        "Rejected",
+    ]
+
+    status_counts = {
+        status: sum(
+            1 for item in requests_list if item.status == status
+        )
+        for status in statuses
+    }
+
+    # Requests received over the last seven calendar days
+    today = date.today()
+    dates = [
+        today - timedelta(days=offset)
+        for offset in range(6, -1, -1)
+    ]
+
+    daily_counts = {day.isoformat(): 0 for day in dates}
+
+    for item in requests_list:
+        if item.created_at:
+            request_day = item.created_at.date().isoformat()
+
+            if request_day in daily_counts:
+                daily_counts[request_day] += 1
 
     return render_template(
         "admin/dashboard.html",
         page_title="Administration",
         service_requests=requests_list,
+        status_labels=statuses,
+        status_counts=[status_counts[status] for status in statuses],
+        total_requests=len(requests_list),
+        pending_requests=(
+            status_counts["Submitted"]
+            + status_counts["Under Review"]
+        ),
+        in_progress_requests=status_counts["In Progress"],
+        resolved_requests=status_counts["Resolved"],
+        rejected_requests=status_counts["Rejected"],
+        daily_labels=[
+            day.strftime("%d %b")
+            for day in dates
+        ],
+        daily_counts=[
+            daily_counts[day.isoformat()]
+            for day in dates
+        ],
     )
+
 
 
 @app.route("/admin/requests/<int:request_id>/update", methods=["POST"])

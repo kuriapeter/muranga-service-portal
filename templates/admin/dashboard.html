@@ -3,57 +3,137 @@
 
 {% block content %}
 <div class="py-4">
-    <div class="mb-4">
-        <h1 class="fw-bold text-primary">Administration Dashboard</h1>
-        <p class="text-muted">
-            Review citizen requests and update their progress.
-        </p>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <h1 class="fw-bold text-primary mb-1">Administration Dashboard</h1>
+            <p class="text-muted mb-0">Monitor public service requests and track progress.</p>
+        </div>
+        <span class="badge text-bg-primary fs-6 py-2 px-3">
+            <i class="bi bi-shield-check me-1"></i> Administrator
+        </span>
     </div>
 
+    <!-- Summary cards -->
     <div class="row g-3 mb-4">
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm">
+        <div class="col-6 col-xl">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Total Requests</p>
-                    <h2>{{ service_requests|length }}</h2>
+                    <div class="text-muted small mb-2">Total Requests</div>
+                    <h2 class="fw-bold mb-0">{{ total_requests }}</h2>
+                    <small class="text-muted">All submissions</small>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm">
+        <div class="col-6 col-xl">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Pending Review</p>
-                    <h2 class="text-warning">
-                        {{ service_requests|selectattr('status', 'in',
-                        ['Submitted', 'Under Review'])|list|length }}
-                    </h2>
+                    <div class="text-muted small mb-2">Awaiting Review</div>
+                    <h2 class="fw-bold text-warning mb-0">{{ pending_requests }}</h2>
+                    <small class="text-muted">Submitted or under review</small>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm">
+        <div class="col-6 col-xl">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <p class="text-muted mb-1">Resolved Requests</p>
-                    <h2 class="text-success">
-                        {{ service_requests|selectattr('status', 'equalto',
-                        'Resolved')|list|length }}
-                    </h2>
+                    <div class="text-muted small mb-2">In Progress</div>
+                    <h2 class="fw-bold text-primary mb-0">{{ in_progress_requests }}</h2>
+                    <small class="text-muted">Being handled</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-xl">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small mb-2">Resolved</div>
+                    <h2 class="fw-bold text-success mb-0">{{ resolved_requests }}</h2>
+                    <small class="text-muted">Successfully resolved</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-xl">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small mb-2">Rejected</div>
+                    <h2 class="fw-bold text-danger mb-0">{{ rejected_requests }}</h2>
+                    <small class="text-muted">Not approved</small>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Charts -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-1">Request Status</h5>
+                    <p class="text-muted small">Current distribution by status</p>
+                    <div style="height: 280px; position: relative;">
+                        <canvas id="statusChart"
+                                role="img"
+                                aria-label="Chart showing service requests by status"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-1">Request Activity</h5>
+                    <p class="text-muted small">Submissions over the last seven calendar days</p>
+                    <div style="height: 280px; position: relative;">
+                        <canvas id="activityChart"
+                                role="img"
+                                aria-label="Chart showing daily service request submissions"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Requests table -->
     <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3">
-            <h5 class="mb-0">All Citizen Requests</h5>
+        <div class="card-header bg-white border-0 pt-4 px-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div>
+                    <h5 class="fw-bold mb-1">Citizen Service Requests</h5>
+                    <p class="text-muted small mb-0">
+                        Search, filter, and update requests.
+                    </p>
+                </div>
+                <span class="badge rounded-pill text-bg-light border">
+                    {{ service_requests|length }} records
+                </span>
+            </div>
         </div>
 
-        <div class="card-body">
+        <div class="card-body px-4">
             {% if service_requests %}
+            <div class="row g-2 mb-3">
+                <div class="col-md-7">
+                    <label for="requestSearch" class="form-label small fw-semibold">
+                        Search requests
+                    </label>
+                    <input type="search" id="requestSearch"
+                           class="form-control"
+                           placeholder="Tracking code, citizen, title, category...">
+                </div>
+                <div class="col-md-5">
+                    <label for="statusFilter" class="form-label small fw-semibold">
+                        Filter by status
+                    </label>
+                    <select id="statusFilter" class="form-select">
+                        <option value="">All statuses</option>
+                        {% for status in status_labels %}
+                        <option value="{{ status }}">{{ status }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table table-hover align-middle" id="requestsTable">
                     <thead class="table-light">
                         <tr>
                             <th>Tracking Code</th>
@@ -61,28 +141,36 @@
                             <th>Request</th>
                             <th>Category</th>
                             <th>Status</th>
-                            <th>Update Request</th>
+                            <th style="min-width: 230px;">Update Request</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for item in service_requests %}
-                        <tr>
+                        <tr data-status="{{ item.status }}"
+                            data-search="{{ (item.tracking_code ~ ' ' ~ item.user.full_name ~ ' ' ~ item.title ~ ' ' ~ item.category)|lower }}">
                             <td>
-                                <strong>{{ item.tracking_code }}</strong>
+                                <span class="fw-semibold text-nowrap">
+                                    {{ item.tracking_code }}
+                                </span>
                             </td>
                             <td>{{ item.user.full_name }}</td>
                             <td>
-                                <a href="{{ url_for('view_request', request_id=item.id) }}">
+                                <a class="fw-semibold text-decoration-none"
+                                   href="{{ url_for('view_request', request_id=item.id) }}">
                                     {{ item.title }}
                                 </a>
+                                <div class="text-muted small">
+                                    {{ item.created_at.strftime('%d %b %Y') if item.created_at else '' }}
+                                </div>
                             </td>
                             <td>{{ item.category }}</td>
                             <td>
                                 <span class="badge
-                                    {% if item.status == 'Resolved' %}bg-success
-                                    {% elif item.status == 'Rejected' %}bg-danger
-                                    {% elif item.status == 'In Progress' %}bg-primary
-                                    {% else %}bg-warning text-dark{% endif %}">
+                                    {% if item.status == 'Resolved' %}text-bg-success
+                                    {% elif item.status == 'Rejected' %}text-bg-danger
+                                    {% elif item.status == 'In Progress' %}text-bg-primary
+                                    {% elif item.status == 'Under Review' %}text-bg-info
+                                    {% else %}text-bg-warning{% endif %}">
                                     {{ item.status }}
                                 </span>
                             </td>
@@ -92,16 +180,12 @@
                                     <input type="hidden" name="csrf_token"
                                            value="{{ csrf_token() }}">
 
-                                    <select name="status"
+                                    <label class="visually-hidden"
+                                           for="status-{{ item.id }}">Request status</label>
+                                    <select id="status-{{ item.id }}" name="status"
                                             class="form-select form-select-sm mb-2"
                                             required>
-                                        {% for status in [
-                                            'Submitted',
-                                            'Under Review',
-                                            'In Progress',
-                                            'Resolved',
-                                            'Rejected'
-                                        ] %}
+                                        {% for status in status_labels %}
                                         <option value="{{ status }}"
                                             {% if item.status == status %}selected{% endif %}>
                                             {{ status }}
@@ -109,26 +193,33 @@
                                         {% endfor %}
                                     </select>
 
-                                    <textarea name="staff_notes"
+                                    <label class="visually-hidden"
+                                           for="notes-{{ item.id }}">Staff notes</label>
+                                    <textarea id="notes-{{ item.id }}"
+                                              name="staff_notes"
                                               class="form-control form-control-sm mb-2"
                                               rows="2"
                                               placeholder="Staff notes...">{{ item.staff_notes or '' }}</textarea>
 
-                                    <button type="submit"
-                                            class="btn btn-primary btn-sm">
+                                    <button type="submit" class="btn btn-primary btn-sm w-100">
                                         Save Update
                                     </button>
                                 </form>
                             </td>
                         </tr>
                         {% endfor %}
+                        <tr id="noMatches" class="d-none">
+                            <td colspan="6" class="text-center text-muted py-4">
+                                No requests match your search or filter.
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
             {% else %}
             <div class="text-center py-5">
-                <h5>No service requests yet</h5>
-                <p class="text-muted">
+                <h5 class="fw-bold">No service requests yet</h5>
+                <p class="text-muted mb-0">
                     Citizen requests will appear here when submitted.
                 </p>
             </div>
@@ -136,4 +227,117 @@
         </div>
     </div>
 </div>
+
+<!-- Charts library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const statusLabels = {{ status_labels|tojson }};
+    const statusCounts = {{ status_counts|tojson }};
+    const dailyLabels = {{ daily_labels|tojson }};
+    const dailyCounts = {{ daily_counts|tojson }};
+
+    if (typeof Chart !== "undefined") {
+        new Chart(document.getElementById("statusChart"), {
+            type: "doughnut",
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    data: statusCounts,
+                    backgroundColor: [
+                        "#fbbf24",
+                        "#06b6d4",
+                        "#3b82f6",
+                        "#16a34a",
+                        "#dc2626"
+                    ],
+                    borderWidth: 2,
+                    borderColor: "#ffffff"
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: "bottom"
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById("activityChart"), {
+            type: "line",
+            data: {
+                labels: dailyLabels,
+                datasets: [{
+                    label: "Requests",
+                    data: dailyCounts,
+                    borderColor: "#2563eb",
+                    backgroundColor: "rgba(37, 99, 235, 0.12)",
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    const searchInput = document.getElementById("requestSearch");
+    const statusFilter = document.getElementById("statusFilter");
+    const table = document.getElementById("requestsTable");
+
+    if (table && searchInput && statusFilter) {
+        const rows = Array.from(
+            table.querySelectorAll("tbody tr[data-status]")
+        );
+        const noMatches = document.getElementById("noMatches");
+
+        function filterRequests() {
+            const query = searchInput.value.trim().toLowerCase();
+            const selectedStatus = statusFilter.value;
+            let visibleCount = 0;
+
+            rows.forEach(function (row) {
+                const matchesSearch = row.dataset.search.includes(query);
+                const matchesStatus = !selectedStatus ||
+                    row.dataset.status === selectedStatus;
+                const visible = matchesSearch && matchesStatus;
+
+                row.classList.toggle("d-none", !visible);
+
+                if (visible) {
+                    visibleCount++;
+                }
+            });
+
+            if (noMatches) {
+                noMatches.classList.toggle("d-none", visibleCount !== 0);
+            }
+        }
+
+        searchInput.addEventListener("input", filterRequests);
+        statusFilter.addEventListener("change", filterRequests);
+    }
+});
+</script>
 {% endblock %}
