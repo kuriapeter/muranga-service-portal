@@ -2,88 +2,238 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-7 col-lg-6">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-4 p-md-5">
-                <h2 class="text-primary fw-bold mb-2">Create Account</h2>
-                <p class="text-muted mb-4">
-                    Register to submit and track public service requests.
-                </p>
+<style>
+    .register-page {
+        max-width: 560px;
+        margin: 0 auto;
+    }
 
-                <form method="post" action="{{ url_for('register') }}">
-                    <input type="hidden" name="csrf_token"
-                           value="{{ csrf_token() }}">
+    .register-card {
+        border: 1px solid #e2eee6;
+        border-radius: 20px;
+        overflow: hidden;
+    }
 
-                    <div class="mb-3">
-                        <label for="full_name" class="form-label">
-                            Full Name
-                        </label>
-                        <input type="text" class="form-control"
-                               id="full_name" name="full_name"
-                               maxlength="120" autocomplete="name"
-                               required>
+    .register-header {
+        background: linear-gradient(135deg, #e8f6ed, #f8fcf9);
+        border-bottom: 1px solid #e2eee6;
+        padding: 1.8rem 2rem;
+    }
+
+    .register-emblem {
+        width: 54px;
+        height: 54px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #176b45;
+        color: #fff;
+        border-radius: 15px;
+        font-size: 1.25rem;
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 1rem;
+    }
+
+    .register-title {
+        color: #176b45;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .register-page .form-label {
+        color: #263b30;
+        font-weight: 650;
+    }
+
+    .register-page .form-control {
+        border: 1px solid #d7e4db;
+        border-radius: 10px;
+        padding: 0.75rem 0.9rem;
+    }
+
+    .register-page .form-control:focus {
+        border-color: #238653;
+        box-shadow: 0 0 0 0.2rem rgba(35, 134, 83, 0.13);
+    }
+
+    .register-page .form-text {
+        color: #66756b;
+        font-size: 0.85rem;
+        margin-top: 0.4rem;
+    }
+
+    .register-page .btn-register {
+        background: #176b45;
+        border: 1px solid #176b45;
+        color: #fff;
+        border-radius: 10px;
+        padding: 0.8rem 1rem;
+        font-weight: 700;
+    }
+
+    .register-page .btn-register:hover {
+        background: #105537;
+        border-color: #105537;
+        color: #fff;
+    }
+
+    .register-note {
+        background: #f3faf5;
+        border: 1px solid #e1eee5;
+        border-radius: 10px;
+        padding: 0.85rem;
+        color: #53665a;
+        font-size: 0.875rem;
+    }
+
+    .register-login a {
+        color: #176b45;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .register-login a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 576px) {
+        .register-header {
+            padding: 1.4rem;
+        }
+
+        .register-card-body {
+            padding: 1.3rem !important;
+        }
+    }
+</style>
+
+<div class="register-page py-3">
+    <div class="text-center mb-4">
+        <div class="d-flex justify-content-center">
+            <div class="register-emblem" aria-hidden="true">MC</div>
+        </div>
+
+        <h1 class="register-title h2 mb-2">Create Your Account</h1>
+        <p class="text-muted mb-0">
+            Join the portal to submit and track public service requests.
+        </p>
+    </div>
+
+    <div class="card register-card shadow-sm">
+        <div class="register-header">
+            <h2 class="h5 fw-bold mb-2">Citizen registration</h2>
+            <p class="text-muted mb-0">
+                Complete the details below to get started.
+            </p>
+        </div>
+
+        <div class="card-body register-card-body p-4">
+            <form method="post" action="{{ url_for('register') }}">
+                <input type="hidden" name="csrf_token"
+                       value="{{ csrf_token() }}">
+
+                <div class="mb-3">
+                    <label for="full_name" class="form-label">
+                        Full Name <span class="text-danger">*</span>
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           id="full_name"
+                           name="full_name"
+                           maxlength="120"
+                           autocomplete="name"
+                           placeholder="Enter your full name"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="national_id" class="form-label">
+                        National ID Number <span class="text-danger">*</span>
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           id="national_id"
+                           name="national_id"
+                           maxlength="20"
+                           inputmode="numeric"
+                           pattern="[0-9]+"
+                           autocomplete="off"
+                           placeholder="Enter your National ID"
+                           aria-describedby="nationalIdHelp"
+                           required>
+                    <div class="form-text" id="nationalIdHelp">
+                        Use the ID number you will use to sign in.
                     </div>
+                </div>
 
-                    <div class="mb-3">
-                        <label for="national_id" class="form-label">
-                            National ID Number
-                        </label>
-                        <input type="text" class="form-control"
-                               id="national_id" name="national_id"
-                               maxlength="20" inputmode="numeric"
-                               pattern="[0-9]+"
-                               autocomplete="off" required>
-                        <div class="form-text">
-                            You will use this number to log in.
-                        </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">
+                        Email Address <span class="text-danger">*</span>
+                    </label>
+                    <input type="email"
+                           class="form-control"
+                           id="email"
+                           name="email"
+                           maxlength="150"
+                           autocomplete="email"
+                           placeholder="you@example.com"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">
+                        Password <span class="text-danger">*</span>
+                    </label>
+                    <input type="password"
+                           class="form-control"
+                           id="password"
+                           name="password"
+                           minlength="8"
+                           autocomplete="new-password"
+                           placeholder="Create a password"
+                           aria-describedby="passwordHelp"
+                           required>
+                    <div class="form-text" id="passwordHelp">
+                        Use at least 8 characters.
                     </div>
+                </div>
 
-                    <div class="mb-3">
-                        <label for="email" class="form-label">
-                            Email Address
-                        </label>
-                        <input type="email" class="form-control"
-                               id="email" name="email"
-                               maxlength="150" autocomplete="email"
-                               required>
-                    </div>
+                <div class="mb-4">
+                    <label for="confirm_password" class="form-label">
+                        Confirm Password <span class="text-danger">*</span>
+                    </label>
+                    <input type="password"
+                           class="form-control"
+                           id="confirm_password"
+                           name="confirm_password"
+                           minlength="8"
+                           autocomplete="new-password"
+                           placeholder="Enter the password again"
+                           required>
+                </div>
 
-                    <div class="mb-3">
-                        <label for="password" class="form-label">
-                            Password
-                        </label>
-                        <input type="password" class="form-control"
-                               id="password" name="password"
-                               minlength="8" autocomplete="new-password"
-                               required>
-                        <div class="form-text">
-                            Use at least 8 characters.
-                        </div>
-                    </div>
+                <div class="register-note mb-4">
+                    <strong class="d-block mb-1">Protect your information</strong>
+                    <span>
+                        Use your own details and keep your password private.
+                    </span>
+                </div>
 
-                    <div class="mb-4">
-                        <label for="confirm_password" class="form-label">
-                            Confirm Password
-                        </label>
-                        <input type="password" class="form-control"
-                               id="confirm_password"
-                               name="confirm_password"
-                               minlength="8"
-                               autocomplete="new-password" required>
-                    </div>
+                <button type="submit" class="btn btn-register w-100">
+                    Create Account
+                </button>
+            </form>
 
-                    <button type="submit" class="btn btn-primary w-100">
-                        Create Account
-                    </button>
-                </form>
-
-                <p class="text-center mt-4 mb-0">
-                    Already registered?
-                    <a href="{{ url_for('login') }}">Sign in</a>
-                </p>
-            </div>
+            <p class="register-login text-center mt-4 mb-0">
+                Already registered?
+                <a href="{{ url_for('login') }}">Sign in</a>
+            </p>
         </div>
     </div>
+
+    <p class="text-muted text-center small mt-3 mb-0">
+        Murang’a County Public Service Request System
+    </p>
 </div>
 {% endblock %}

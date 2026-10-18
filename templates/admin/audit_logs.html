@@ -1,0 +1,189 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-shield-check me-2"></i>Audit Logs
+            </h2>
+            <p class="text-muted mb-0">
+                Review administrative actions and request history.
+            </p>
+        </div>
+
+        <a href="{{ url_for('admin_dashboard') }}"
+           class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET"
+                  action="{{ url_for('audit_logs') }}"
+                  class="row g-2">
+
+                <div class="col-md-9">
+                    <input
+                        type="search"
+                        name="search"
+                        class="form-control"
+                        placeholder="Search tracking code, action, or details..."
+                        value="{{ search }}"
+                        maxlength="100"
+                    >
+                </div>
+
+                <div class="col-md-3 d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search me-1"></i>Search Logs
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Activity History</h5>
+                <span class="badge bg-secondary">
+                    {{ pagination.total }} records
+                </span>
+            </div>
+
+            {% if logs %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Actor</th>
+                                <th>Action</th>
+                                <th>Tracking Code</th>
+                                <th>Change Details</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for log in logs %}
+                                <tr>
+                                    <td class="text-nowrap">
+                                        {% if log.created_at %}
+                                            {{ log.created_at.strftime("%d %b %Y, %H:%M") }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {{ log.actor.full_name if log.actor else "Deleted user" }}
+                                        </div>
+                                        <small class="text-muted">
+                                            {{ log.actor_role or "Unknown role" | replace("_", " ") | title }}
+                                        </small>
+                                    </td>
+
+                                    <td>
+                                        {% if log.action == "status_changed" %}
+                                            <span class="badge bg-primary">Status Changed</span>
+                                        {% elif log.action == "staff_notes_updated" %}
+                                            <span class="badge bg-info text-dark">Notes Updated</span>
+                                        {% elif log.action == "department_transferred" %}
+                                            <span class="badge bg-warning text-dark">Department Transfer</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">
+                                                {{ log.action | replace("_", " ") | title }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {% if log.tracking_code %}
+                                            <code>{{ log.tracking_code }}</code>
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </td>
+
+                                    <td style="min-width: 250px;">
+                                        <div>{{ log.details }}</div>
+
+                                        {% if log.old_value or log.new_value %}
+                                            <div class="small mt-2">
+                                                {% if log.old_value %}
+                                                    <div>
+                                                        <span class="text-muted">From:</span>
+                                                        {{ log.old_value }}
+                                                    </div>
+                                                {% endif %}
+
+                                                {% if log.new_value %}
+                                                    <div>
+                                                        <span class="text-muted">To:</span>
+                                                        {{ log.new_value }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <nav aria-label="Audit log pagination" class="mt-4">
+                    <ul class="pagination justify-content-center flex-wrap">
+
+                        <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                            {% if pagination.has_prev %}
+                                <a class="page-link"
+                                   href="{{ url_for('audit_logs', page=pagination.prev_num, search=search) }}">
+                                    Previous
+                                </a>
+                            {% else %}
+                                <span class="page-link">Previous</span>
+                            {% endif %}
+                        </li>
+
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                Page {{ pagination.page }} of {{ pagination.pages or 1 }}
+                            </span>
+                        </li>
+
+                        <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                            {% if pagination.has_next %}
+                                <a class="page-link"
+                                   href="{{ url_for('audit_logs', page=pagination.next_num, search=search) }}">
+                                    Next
+                                </a>
+                            {% else %}
+                                <span class="page-link">Next</span>
+                            {% endif %}
+                        </li>
+
+                    </ul>
+                </nav>
+
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-journal-text display-4 text-muted"></i>
+                    <h5 class="mt-3">No audit records found</h5>
+                    <p class="text-muted mb-0">
+                        Try another search term or check again after an administrative action.
+                    </p>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

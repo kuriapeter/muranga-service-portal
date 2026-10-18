@@ -1,0 +1,121 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-1">Create Department Admin</h2>
+                    <p class="text-muted mb-0">
+                        Register an administrator for a county department.
+                    </p>
+                </div>
+                <a href="{{ url_for('admin_dashboard') }}"
+                   class="btn btn-outline-secondary">
+                    Back to Dashboard
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+
+                    <div class="alert alert-info">
+                        Department administrators can manage requests
+                        assigned to their department.
+                    </div>
+
+                    <form method="POST"
+                          action="{{ url_for('create_department_admin') }}">
+
+                        <input type="hidden"
+                               name="csrf_token"
+                               value="{{ csrf_token() }}">
+
+                        <div class="mb-3">
+                            <label for="full_name" class="form-label">
+                                Full Name
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="full_name"
+                                   name="full_name"
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="national_id" class="form-label">
+                                National ID Number
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="national_id"
+                                   name="national_id"
+                                   inputmode="numeric"
+                                   pattern="[0-9]+"
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                Email Address
+                            </label>
+                            <input type="email"
+                                   class="form-control"
+                                   id="email"
+                                   name="email"
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="department_id" class="form-label">
+                                Department
+                            </label>
+                            <select class="form-select"
+                                    id="department_id"
+                                    name="department_id"
+                                    required>
+                                <option value="">Select department</option>
+
+                                {% for department in departments %}
+                                    {% if department.is_active %}
+                                    <option value="{{ department.id }}">
+                                        {{ department.name }}
+                                    </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label">
+                                Temporary Password
+                            </label>
+                            <input type="password"
+                                   class="form-control"
+                                   id="password"
+                                   name="password"
+                                   minlength="8"
+                                   autocomplete="new-password"
+                                   required>
+                            <div class="form-text">
+                                Use at least 8 characters. Share credentials
+                                securely with the intended administrator.
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-person-plus"></i>
+                            Create Department Admin
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

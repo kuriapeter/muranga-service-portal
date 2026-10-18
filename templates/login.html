@@ -2,50 +2,183 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6 col-lg-5">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-4 p-md-5">
-                <h2 class="text-primary fw-bold mb-2">Welcome Back</h2>
-                <p class="text-muted mb-4">
-                    Sign in to manage your service requests.
-                </p>
+<style>
+    .login-page {
+        max-width: 460px;
+        margin: 0 auto;
+    }
 
-                <form method="post" action="{{ url_for('login') }}">
-                    <input type="hidden" name="csrf_token"
-                           value="{{ csrf_token() }}">
+    .login-card {
+        border: 1px solid #e2eee6;
+        border-radius: 20px;
+        overflow: hidden;
+    }
 
-                    <div class="mb-3">
-                        <label for="national_id" class="form-label">
-                            National ID Number
-                        </label>
-                        <input type="text" class="form-control"
-                               id="national_id" name="national_id"
-                               maxlength="20" inputmode="numeric"
-                               pattern="[0-9]+"
-                               autocomplete="off" required>
-                    </div>
+    .login-header {
+        background: linear-gradient(135deg, #e8f6ed, #f8fcf9);
+        border-bottom: 1px solid #e2eee6;
+        padding: 2rem 2rem 1.5rem;
+    }
 
-                    <div class="mb-4">
-                        <label for="password" class="form-label">
-                            Password
-                        </label>
-                        <input type="password" class="form-control"
-                               id="password" name="password"
-                               autocomplete="current-password" required>
-                    </div>
+    .login-emblem {
+        width: 54px;
+        height: 54px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #176b45;
+        color: white;
+        border-radius: 15px;
+        font-size: 1.25rem;
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 1rem;
+    }
 
-                    <button type="submit" class="btn btn-primary w-100">
-                        Sign In
-                    </button>
-                </form>
+    .login-title {
+        color: #176b45;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
 
-                <p class="text-center mt-4 mb-0">
-                    Don't have an account?
-                    <a href="{{ url_for('register') }}">Register</a>
-                </p>
+    .login-page .form-label {
+        color: #263b30;
+        font-weight: 650;
+    }
+
+    .login-page .form-control {
+        border: 1px solid #d7e4db;
+        border-radius: 10px;
+        padding: 0.8rem 0.9rem;
+    }
+
+    .login-page .form-control:focus {
+        border-color: #238653;
+        box-shadow: 0 0 0 0.2rem rgba(35, 134, 83, 0.13);
+    }
+
+    .login-page .btn-login {
+        background: #176b45;
+        border: 1px solid #176b45;
+        color: white;
+        border-radius: 10px;
+        padding: 0.8rem 1rem;
+        font-weight: 700;
+        transition: background 0.2s ease;
+    }
+
+    .login-page .btn-login:hover {
+        background: #105537;
+        border-color: #105537;
+        color: white;
+    }
+
+    .login-security-note {
+        background: #f3faf5;
+        border: 1px solid #e1eee5;
+        border-radius: 10px;
+        padding: 0.8rem;
+        color: #53665a;
+        font-size: 0.85rem;
+    }
+
+    .login-register a {
+        color: #176b45;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .login-register a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 576px) {
+        .login-header {
+            padding: 1.5rem;
+        }
+
+        .login-card-body {
+            padding: 1.5rem !important;
+        }
+    }
+</style>
+
+<div class="login-page py-3">
+    <div class="text-center mb-4">
+        <div class="d-flex justify-content-center">
+            <div class="login-emblem" aria-hidden="true">MC</div>
+        </div>
+
+        <h1 class="login-title h2 mb-2">Welcome Back</h1>
+
+        <p class="text-muted mb-0">
+            Sign in to access your public service requests.
+        </p>
+    </div>
+
+    <div class="card login-card shadow-sm">
+        <div class="login-header">
+            <h2 class="h5 fw-bold mb-2">Sign in to your account</h2>
+            <p class="text-muted mb-0">
+                Enter your registered National ID and password to continue.
+            </p>
+        </div>
+
+        <div class="card-body login-card-body p-4">
+            <form method="post" action="{{ url_for('login') }}">
+                <input type="hidden" name="csrf_token"
+                       value="{{ csrf_token() }}">
+
+                <div class="mb-4">
+                    <label for="national_id" class="form-label">
+                        National ID Number
+                    </label>
+
+                    <input type="text"
+                           class="form-control"
+                           id="national_id"
+                           name="national_id"
+                           maxlength="20"
+                           inputmode="numeric"
+                           pattern="[0-9]+"
+                           autocomplete="off"
+                           placeholder="Enter your National ID"
+                           required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="password" class="form-label">
+                        Password
+                    </label>
+
+                    <input type="password"
+                           class="form-control"
+                           id="password"
+                           name="password"
+                           autocomplete="current-password"
+                           placeholder="Enter your password"
+                           required>
+                </div>
+
+                <button type="submit" class="btn btn-login w-100">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="login-security-note mt-4">
+                <strong>Keep your account secure.</strong>
+                Never share your password with anyone.
             </div>
+
+            <p class="login-register text-center mt-4 mb-0">
+                Don't have an account?
+                <a href="{{ url_for('register') }}">Create an account</a>
+            </p>
         </div>
     </div>
+
+    <p class="text-muted text-center small mt-3 mb-0">
+        Murang’a County Public Service Request System
+    </p>
 </div>
 {% endblock %}

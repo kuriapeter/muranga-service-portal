@@ -1,97 +1,263 @@
+
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-4">
-                <h2 class="fw-bold text-primary mb-2">
-                    New Service Request
-                </h2>
-                <p class="text-muted">
-                    Submit an issue or request to the county.
-                </p>
+<style>
+    .request-page {
+        max-width: 850px;
+        margin: 0 auto;
+    }
 
-                <form method="POST"
-                      action="{{ url_for('new_request') }}"
-                      enctype="multipart/form-data">
-                    <input type="hidden" name="csrf_token"
-                           value="{{ csrf_token() }}">
+    .request-heading {
+        color: #176b45;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
 
-                    <div class="mb-3">
-                        <label for="title" class="form-label">
-                            Request Title
-                        </label>
-                        <input type="text" id="title" name="title"
-                               class="form-control" maxlength="150"
-                               placeholder="e.g. Repair a damaged road"
-                               required>
+    .request-card {
+        border: 1px solid #e5eee8;
+        border-radius: 18px;
+        overflow: hidden;
+    }
+
+    .request-card-header {
+        background: linear-gradient(135deg, #eaf7ef, #f8fcf9);
+        border-bottom: 1px solid #e0eee5;
+        padding: 1.5rem;
+    }
+
+    .request-section-label {
+        color: #176b45;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .request-page .form-label {
+        font-weight: 650;
+        color: #263b30;
+    }
+
+    .request-page .form-control,
+    .request-page .form-select {
+        border-color: #d8e4dc;
+        border-radius: 10px;
+        padding: 0.75rem 0.9rem;
+    }
+
+    .request-page .form-control:focus,
+    .request-page .form-select:focus {
+        border-color: #238653;
+        box-shadow: 0 0 0 0.2rem rgba(35, 134, 83, 0.13);
+    }
+
+    .request-page textarea {
+        min-height: 145px;
+        resize: vertical;
+    }
+
+    .request-help {
+        color: #66756b;
+        font-size: 0.875rem;
+        margin-top: 0.4rem;
+    }
+
+    .request-page .btn-county {
+        background: #176b45;
+        color: #fff;
+        border: 1px solid #176b45;
+        border-radius: 10px;
+        font-weight: 650;
+        padding: 0.75rem 1.2rem;
+    }
+
+    .request-page .btn-county:hover {
+        background: #105537;
+        border-color: #105537;
+        color: #fff;
+    }
+
+    .request-page .btn-outline-county {
+        border: 1px solid #b9cfc0;
+        color: #176b45;
+        border-radius: 10px;
+        font-weight: 650;
+        padding: 0.75rem 1.2rem;
+    }
+
+    .request-page .btn-outline-county:hover {
+        background: #edf7f0;
+        color: #105537;
+    }
+
+    .request-tip {
+        background: #f3faf5;
+        border: 1px solid #e0eee5;
+        border-radius: 12px;
+        padding: 1rem;
+    }
+
+    @media (max-width: 576px) {
+        .request-card-header {
+            padding: 1.2rem;
+        }
+
+        .request-card-body {
+            padding: 1.2rem !important;
+        }
+
+        .request-actions {
+            flex-direction: column;
+        }
+
+        .request-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="request-page py-3">
+    <div class="mb-4">
+        <div class="request-section-label mb-2">
+            Public Service Portal
+        </div>
+
+        <h1 class="request-heading h2 mb-2">
+            Submit a Service Request
+        </h1>
+
+        <p class="text-muted mb-0">
+            Report a local issue and help improve public services in Murang’a County.
+        </p>
+    </div>
+
+    <div class="card request-card shadow-sm">
+        <div class="request-card-header">
+            <h2 class="h5 fw-bold mb-2">Request details</h2>
+            <p class="text-muted mb-0">
+                Provide clear information so the relevant team can understand the issue.
+            </p>
+        </div>
+
+        <div class="card-body request-card-body p-4">
+            <form method="POST"
+                  action="{{ url_for('new_request') }}"
+                  enctype="multipart/form-data">
+
+                <input type="hidden" name="csrf_token"
+                       value="{{ csrf_token() }}">
+
+                <div class="mb-4">
+                    <label for="title" class="form-label">
+                        Request title <span class="text-danger">*</span>
+                    </label>
+
+                    <input type="text" id="title" name="title"
+                           class="form-control" maxlength="150"
+                           placeholder="e.g. Repair a damaged road"
+                           autocomplete="off" required>
+
+                    <div class="request-help">
+                        Use a short, clear title describing the problem.
                     </div>
+                </div>
 
-                    <div class="mb-3">
-                        <label for="category" class="form-label">
-                            Category
-                        </label>
-                        <select id="category" name="category"
-                                class="form-select" required>
-                            <option value="">Choose a category</option>
-                            {% for category in categories %}
-                            <option value="{{ category }}">
-                                {{ category }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                <div class="mb-4">
+                    <label for="category" class="form-label">
+                        Service category <span class="text-danger">*</span>
+                    </label>
 
-                    <div class="mb-3">
-                        <label for="location" class="form-label">
-                            Location
-                        </label>
-                        <input type="text" id="location" name="location"
-                               class="form-control" maxlength="250"
-                               placeholder="e.g. Kenol, near the main market"
-                               required>
-                        <div class="form-text">
-                            Enter the estate, village, road, landmark, or
-                            other place where the issue is located.
-                        </div>
-                    </div>
+                    <select id="category" name="category"
+                            class="form-select" required>
+                        <option value="">Choose a category</option>
 
-                    <div class="mb-3">
-                        <label for="description" class="form-label">
-                            Description
-                        </label>
-                        <textarea id="description" name="description"
-                                  class="form-control" rows="5"
-                                  placeholder="Describe the issue in detail..."
-                                  required></textarea>
-                    </div>
+                        {% for category in categories %}
+                        <option value="{{ category }}"
+                            {% if category == (selected_category|default('')) %}
+                                selected
+                            {% endif %}>
+                            {{ category }}
+                        </option>
+                        {% endfor %}
+                    </select>
 
-                    <div class="mb-4">
-                        <label for="image" class="form-label">
-                            Attach a photo <span class="text-muted">(optional)</span>
-                        </label>
-                        <input type="file" id="image" name="image"
-                               class="form-control"
-                               accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
-                        <div class="form-text">
-                            Accepted formats: JPG, PNG, or WEBP. Maximum
-                            size: 5 MB.
-                        </div>
+                    <div class="request-help">
+                        Choose the category that best matches the issue.
+                        You can change the preselected category if needed.
                     </div>
+                </div>
 
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            Submit Request
-                        </button>
-                        <a href="{{ url_for('dashboard') }}"
-                           class="btn btn-outline-secondary">
-                            Cancel
-                        </a>
+                <div class="mb-4">
+                    <label for="location" class="form-label">
+                        Location of the issue <span class="text-danger">*</span>
+                    </label>
+
+                    <input type="text" id="location" name="location"
+                           class="form-control" maxlength="250"
+                           placeholder="e.g. Kenol, near the main market"
+                           autocomplete="street-address" required>
+
+                    <div class="request-help">
+                        Include the village, estate, road, landmark, or nearest public facility.
                     </div>
-                </form>
-            </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="description" class="form-label">
+                        Description <span class="text-danger">*</span>
+                    </label>
+
+                    <textarea id="description" name="description"
+                              class="form-control" rows="5"
+                              placeholder="Explain what happened, where it occurred, and what needs attention..."
+                              required></textarea>
+
+                    <div class="request-help">
+                        Be specific and include any details that may help the county team assess the issue.
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="image" class="form-label">
+                        Supporting photo
+                        <span class="text-muted fw-normal">(optional)</span>
+                    </label>
+
+                    <input type="file" id="image" name="image"
+                           class="form-control"
+                           accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+
+                    <div class="request-help">
+                        JPG, PNG, or WEBP. Maximum size: 5 MB.
+                        A photo can help illustrate the reported issue.
+                    </div>
+                </div>
+
+                <div class="request-tip mb-4">
+                    <strong class="d-block mb-1">Before submitting</strong>
+                    <span class="text-muted small">
+                        Check that your title, category, location, and description are accurate.
+                        Keep your tracking code after submission so you can follow the request's progress.
+                    </span>
+                </div>
+
+                <div class="d-flex gap-2 request-actions">
+                    <button type="submit" class="btn btn-county">
+                        Submit Request
+                    </button>
+
+                    <a href="{{ url_for('dashboard') }}"
+                       class="btn btn-outline-county">
+                        Cancel
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
+
+    <p class="text-muted small text-center mt-3 mb-0">
+        Please submit accurate information to help the relevant team respond appropriately.
+    </p>
 </div>
 {% endblock %}

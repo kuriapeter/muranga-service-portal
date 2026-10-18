@@ -2,126 +2,405 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="py-4">
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+
+<style>
+    .dashboard-heading {
+        color: #173d27;
+        font-weight: 800;
+        letter-spacing: -0.035em;
+    }
+
+    .dashboard-subtitle {
+        color: #68756c;
+        line-height: 1.7;
+    }
+
+    .dashboard-stat {
+        position: relative;
+        height: 100%;
+        overflow: hidden;
+        padding: 1.4rem;
+        background: #fff;
+        border: 1px solid #e4eae5;
+        border-radius: 16px;
+        box-shadow: 0 5px 20px rgba(30, 50, 35, 0.04);
+    }
+
+    .dashboard-stat-label {
+        color: #68756c;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .dashboard-stat-number {
+        margin: 0.45rem 0 0;
+        color: #203b2a;
+        font-size: clamp(1.8rem, 4vw, 2.3rem);
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .stat-total {
+        border-top: 4px solid #14532d;
+    }
+
+    .stat-pending {
+        border-top: 4px solid #d99b18;
+    }
+
+    .stat-resolved {
+        border-top: 4px solid #21834b;
+    }
+
+    .dashboard-panel {
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #e4eae5;
+        border-radius: 16px;
+        box-shadow: 0 5px 20px rgba(30, 50, 35, 0.04);
+    }
+
+    .dashboard-panel-header {
+        padding: 1.15rem 1.35rem;
+        border-bottom: 1px solid #e9eeea;
+    }
+
+    .dashboard-panel-title {
+        margin: 0;
+        color: #203b2a;
+        font-size: 1.05rem;
+        font-weight: 750;
+    }
+
+    .dashboard-table-wrap {
+        padding: 0 1.1rem 1.1rem;
+    }
+
+    .dashboard-table {
+        margin-bottom: 0;
+        vertical-align: middle;
+    }
+
+    .dashboard-table thead th {
+        padding: 0.95rem 0.8rem;
+        background: #f5f8f5;
+        color: #5c6a60;
+        border-bottom-color: #e4eae5;
+        font-size: 0.76rem;
+        font-weight: 750;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .dashboard-table tbody td {
+        padding: 1rem 0.8rem;
+        border-bottom-color: #edf1ed;
+    }
+
+    .dashboard-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .request-title {
+        color: #243329;
+        font-weight: 650;
+    }
+
+    .tracking-code {
+        color: #14532d;
+        font-size: 0.84rem;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    .status-pill {
+        display: inline-block;
+        padding: 0.4rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.77rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .status-submitted {
+        color: #79520b;
+        background: #fff2cc;
+    }
+
+    .status-review {
+        color: #075985;
+        background: #e0f2fe;
+    }
+
+    .status-progress {
+        color: #1d4ed8;
+        background: #dbeafe;
+    }
+
+    .status-resolved {
+        color: #166534;
+        background: #dcfce7;
+    }
+
+    .status-rejected {
+        color: #991b1b;
+        background: #fee2e2;
+    }
+
+    .dashboard-empty {
+        padding: 3.5rem 1.25rem;
+        text-align: center;
+    }
+
+    .dashboard-empty-icon {
+        display: inline-flex;
+        width: 68px;
+        height: 68px;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        color: #14532d;
+        background: #eaf5ed;
+        border-radius: 20px;
+        font-size: 1.8rem;
+    }
+
+    @media (max-width: 575.98px) {
+        .dashboard-stat {
+            padding: 1.1rem;
+        }
+
+        .dashboard-panel-header {
+            padding: 1rem;
+        }
+
+        .dashboard-table-wrap {
+            padding: 0 0.6rem 0.6rem;
+        }
+    }
+</style>
+
+<div class="py-3 py-md-4">
+
+    <div class="d-flex flex-column flex-sm-row
+                justify-content-between align-items-sm-center
+                gap-3 mb-4">
+
         <div>
-            <h1 class="fw-bold text-primary">My Dashboard</h1>
-            <p class="text-muted">
-                Welcome, {{ current_user.full_name }}!
-                Track your county service requests here.
+            <p class="text-uppercase small fw-bold mb-2"
+               style="color: #287044; letter-spacing: 0.09em;">
+                CITIZEN PORTAL
+            </p>
+
+            <h1 class="dashboard-heading h2 mb-2">
+                My Dashboard
+            </h1>
+
+            <p class="dashboard-subtitle mb-0">
+                Welcome, {{ current_user.full_name }}.
+                View and track your service requests here.
             </p>
         </div>
-        <a href="{{ url_for('new_request') }}" class="btn btn-primary">
-            + New Service Request
-        </a>
-    </div>
 
-    <div class="row g-3 mb-4">
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <p class="text-muted mb-1">Total Requests</p>
-                    <h2>{{ service_requests|length }}</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <p class="text-muted mb-1">Pending Requests</p>
-                    <h2 class="text-warning">
-                        {{ service_requests|selectattr('status', 'in',
-                        ['Submitted', 'Under Review', 'In Progress'])|list|length }}
-                    </h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <p class="text-muted mb-1">Resolved Requests</p>
-                    <h2 class="text-success">
-                        {{ service_requests|selectattr('status', 'equalto',
-                        'Resolved')|list|length }}
-                    </h2>
-                </div>
-            </div>
+        <div class="flex-shrink-0">
+            <a href="{{ url_for('new_request') }}"
+               class="btn btn-county px-3 py-2">
+                <span aria-hidden="true">+</span>
+                New Service Request
+            </a>
         </div>
     </div>
 
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-white py-3">
-            <h5 class="mb-0">My Service Requests</h5>
-        </div>
-        <div class="card-body">
-            {% if service_requests %}
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Tracking Code</th>
-                            <th>Title</th>
-                            <th>Category</th>
-                            <th>Date Submitted</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in service_requests %}
-                        <tr>
-                            <td>{{ item.tracking_code }}</td>
-                            <td>{{ item.title }}</td>
-                            <td>{{ item.category }}</td>
-                            <td>
-                                {% if item.created_at %}
-                                    {{ item.created_at.strftime('%d %b %Y') }}
-                                {% else %}
-                                    —
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if item.status == 'Resolved' %}
-                                    <span class="badge bg-success">Resolved</span>
-                                {% elif item.status == 'Rejected' %}
-                                    <span class="badge bg-danger">Rejected</span>
-                                {% elif item.status == 'In Progress' %}
-                                    <span class="badge bg-primary">In Progress</span>
-                                {% elif item.status == 'Under Review' %}
-                                    <span class="badge bg-info text-dark">Under Review</span>
-                                {% else %}
-                                    <span class="badge bg-warning text-dark">
-                                        {{ item.status }}
-                                    </span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <a href="{{ url_for('view_request', request_id=item.id) }}"
-                                   class="btn btn-outline-primary btn-sm">
-                                    View
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    {% set total_requests = service_requests|length %}
+    {% set pending_requests = service_requests
+        |selectattr('status', 'in',
+        ['Submitted', 'Under Review', 'In Progress'])
+        |list|length %}
+    {% set resolved_requests = service_requests
+        |selectattr('status', 'equalto', 'Resolved')
+        |list|length %}
+
+    <section aria-label="Request summary">
+        <div class="row g-3 mb-4">
+
+            <div class="col-12 col-sm-4">
+                <div class="dashboard-stat stat-total">
+                    <div class="dashboard-stat-label">
+                        Total Requests
+                    </div>
+                    <p class="dashboard-stat-number">
+                        {{ total_requests }}
+                    </p>
+                    <p class="text-secondary small mb-0 mt-2">
+                        All submitted requests
+                    </p>
+                </div>
             </div>
-            {% else %}
-            <div class="text-center py-5">
-                <div class="fs-1 mb-3">📋</div>
-                <h5>No service requests yet</h5>
-                <p class="text-muted">
-                    You haven't submitted a request yet.
-                    Create your first request to get started.
+
+            <div class="col-12 col-sm-4">
+                <div class="dashboard-stat stat-pending">
+                    <div class="dashboard-stat-label">
+                        Active Requests
+                    </div>
+                    <p class="dashboard-stat-number">
+                        {{ pending_requests }}
+                    </p>
+                    <p class="text-secondary small mb-0 mt-2">
+                        Awaiting completion
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-4">
+                <div class="dashboard-stat stat-resolved">
+                    <div class="dashboard-stat-label">
+                        Resolved Requests
+                    </div>
+                    <p class="dashboard-stat-number">
+                        {{ resolved_requests }}
+                    </p>
+                    <p class="text-secondary small mb-0 mt-2">
+                        Marked as resolved
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="dashboard-panel" aria-labelledby="requests-heading">
+
+        <div class="dashboard-panel-header
+                    d-flex flex-column flex-sm-row
+                    justify-content-between align-items-sm-center gap-2">
+
+            <div>
+                <h2 class="dashboard-panel-title"
+                    id="requests-heading">
+                    My Service Requests
+                </h2>
+                <p class="text-secondary small mb-0 mt-1">
+                    Review your submissions and current status.
                 </p>
-                <a href="{{ url_for('new_request') }}" class="btn btn-primary">
+            </div>
+
+            <span class="badge rounded-pill text-bg-light border px-3 py-2">
+                {{ total_requests }} total
+            </span>
+        </div>
+
+        {% if service_requests %}
+
+            <div class="dashboard-table-wrap pt-2">
+                <div class="table-responsive">
+                    <table class="table table-hover dashboard-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Tracking Code</th>
+                                <th scope="col">Request</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Date Submitted</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for item in service_requests %}
+                            <tr>
+                                <td>
+                                    <span class="tracking-code">
+                                        {{ item.tracking_code }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="request-title">
+                                        {{ item.title }}
+                                    </span>
+                                </td>
+
+                                <td>{{ item.category }}</td>
+
+                                <td class="text-nowrap">
+                                    {% if item.created_at %}
+                                        {{ item.created_at.strftime('%d %b %Y') }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if item.status == 'Resolved' %}
+                                        <span class="status-pill status-resolved">
+                                            Resolved
+                                        </span>
+                                    {% elif item.status == 'Rejected' %}
+                                        <span class="status-pill status-rejected">
+                                            Rejected
+                                        </span>
+                                    {% elif item.status == 'In Progress' %}
+                                        <span class="status-pill status-progress">
+                                            In Progress
+                                        </span>
+                                    {% elif item.status == 'Under Review' %}
+                                        <span class="status-pill status-review">
+                                            Under Review
+                                        </span>
+                                    {% else %}
+                                        <span class="status-pill status-submitted">
+                                            {{ item.status }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    <a href="{{ url_for('view_request', request_id=item.id) }}"
+                                       class="btn btn-outline-county btn-sm px-3">
+                                        View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        {% else %}
+
+            <div class="dashboard-empty">
+                <div class="dashboard-empty-icon"
+                     aria-hidden="true">
+                    &#128203;
+                </div>
+
+                <h3 class="h5 fw-bold">
+                    No service requests yet
+                </h3>
+
+                <p class="text-secondary mx-auto mb-4"
+                   style="max-width: 430px; line-height: 1.7;">
+                    Your submitted requests will appear here.
+                    Create your first request to receive a tracking code
+                    and follow its progress.
+                </p>
+
+                <a href="{{ url_for('new_request') }}"
+                   class="btn btn-county px-4 py-2">
                     Submit Your First Request
                 </a>
             </div>
-            {% endif %}
-        </div>
-    </div>
+
+        {% endif %}
+
+    </section>
+
+    <p class="text-secondary small text-center mt-4 mb-0">
+        Keep your tracking code for future reference.
+    </p>
+
 </div>
+
 {% endblock %}

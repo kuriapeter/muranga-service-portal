@@ -2,76 +2,466 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="bg-white rounded shadow-sm p-4 p-md-5">
-    <span class="badge bg-primary mb-3">Digital Public Services</span>
 
-    <h1 class="text-primary fw-bold">
-        Public Service Request System
-    </h1>
+<style>
+    .home-hero {
+        position: relative;
+        overflow: hidden;
+        padding: clamp(2rem, 6vw, 4.5rem);
+        background: linear-gradient(135deg, #ffffff 0%, #edf7ef 100%);
+        border: 1px solid #e0ebe2;
+        border-radius: 24px;
+    }
 
-    <p class="lead">
-        A digital platform for submitting and tracking public service
-        requests in Murang'a County.
-    </p>
+    .home-hero::after {
+        content: "";
+        position: absolute;
+        width: 240px;
+        height: 240px;
+        right: -90px;
+        top: -100px;
+        border-radius: 50%;
+        background: rgba(20, 83, 45, 0.06);
+        pointer-events: none;
+    }
 
-    <p class="text-muted">
-        Create an account to submit a request, receive a tracking code,
-        and follow its progress online.
-    </p>
+    .home-hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 760px;
+    }
 
-    {% if current_user.is_authenticated %}
-        <a class="btn btn-primary me-2"
-           href="{{ url_for('new_request') }}">
-            Submit a Request
-        </a>
-        <a class="btn btn-outline-primary"
-           href="{{ url_for('dashboard') }}">
-            My Dashboard
-        </a>
-    {% else %}
-        <a class="btn btn-primary me-2"
-           href="{{ url_for('register') }}">
-            Create Account
-        </a>
-        <a class="btn btn-outline-primary"
-           href="{{ url_for('login') }}">
-            Sign In
-        </a>
-    {% endif %}
-</div>
+    .home-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.85rem;
+        color: #14532d;
+        background: #e1f1e5;
+        border: 1px solid #cce6d2;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
 
-<div class="row g-3 mt-3">
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body">
-                <h5>Submit Requests</h5>
-                <p class="text-muted mb-0">
-                    Send public service concerns through one online portal.
-                </p>
-            </div>
+    .home-title {
+        margin-top: 1.35rem;
+        color: #173d27;
+        font-size: clamp(2rem, 5vw, 3.45rem);
+        line-height: 1.12;
+        font-weight: 800;
+        letter-spacing: -0.045em;
+    }
+
+    .home-lead {
+        max-width: 680px;
+        margin-top: 1.25rem;
+        color: #47584c;
+        font-size: clamp(1rem, 2vw, 1.18rem);
+        line-height: 1.8;
+    }
+
+    .home-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 1.75rem;
+    }
+
+    .home-actions .btn {
+        padding: 0.8rem 1.2rem;
+    }
+
+    .home-note {
+        margin-top: 1.25rem;
+        color: #68756c;
+        font-size: 0.88rem;
+    }
+
+    .section-heading {
+        color: #203b2a;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+    }
+
+    .feature-card {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        height: 100%;
+        padding: 1.5rem;
+        background: #fff;
+        border: 1px solid #e4eae5;
+        border-radius: 17px;
+        box-shadow: 0 5px 20px rgba(30, 50, 35, 0.04);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 28px rgba(30, 50, 35, 0.08);
+    }
+
+    .feature-icon {
+        display: inline-flex;
+        width: 50px;
+        height: 50px;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.1rem;
+        color: #14532d;
+        background: #eaf5ed;
+        border-radius: 14px;
+        font-size: 1.4rem;
+        font-weight: 800;
+    }
+
+    .feature-title {
+        margin-bottom: 0.65rem;
+        color: #243329;
+        font-size: 1.08rem;
+        font-weight: 750;
+    }
+
+    .feature-description {
+        flex-grow: 1;
+        margin-bottom: 1rem;
+        color: #68756c;
+        line-height: 1.75;
+    }
+
+    .category-card .btn {
+        margin-top: auto;
+    }
+
+    .home-bottom {
+        padding: 1.5rem;
+        background: #173d27;
+        color: #fff;
+        border-radius: 18px;
+    }
+
+    .home-bottom p {
+        margin-bottom: 0;
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.7;
+    }
+
+    @media (max-width: 575.98px) {
+        .home-hero {
+            padding: 1.5rem;
+            border-radius: 18px;
+        }
+
+        .home-actions {
+            flex-direction: column;
+        }
+
+        .home-actions .btn {
+            width: 100%;
+        }
+
+        .feature-card {
+            padding: 1.25rem;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .feature-card {
+            transition: none;
+        }
+
+        .feature-card:hover {
+            transform: none;
+        }
+    }
+</style>
+
+<section class="home-hero">
+    <div class="home-hero-content">
+
+        <span class="home-eyebrow">
+            <span aria-hidden="true">●</span>
+            DIGITAL PUBLIC SERVICES
+        </span>
+
+        <h1 class="home-title">
+            Your voice matters.<br>
+            Your service request starts here.
+        </h1>
+
+        <p class="home-lead">
+            Submit public service concerns, track their progress,
+            and stay informed through the Murang'a County Public
+            Service Request System.
+        </p>
+
+        <p class="text-secondary mb-0">
+            A simple digital way to report issues such as damaged roads,
+            water concerns, waste collection, and other county services.
+        </p>
+
+        <div class="home-actions">
+            {% if current_user.is_authenticated %}
+                <a class="btn btn-county btn-lg"
+                   href="{{ url_for('new_request') }}">
+                    Submit a Request <span aria-hidden="true">→</span>
+                </a>
+
+                <a class="btn btn-outline-county btn-lg"
+                   href="{{ url_for('dashboard') }}">
+                    View My Dashboard
+                </a>
+            {% else %}
+                <a class="btn btn-county btn-lg"
+                   href="{{ url_for('register') }}">
+                    Create an Account <span aria-hidden="true">→</span>
+                </a>
+
+                <a class="btn btn-outline-county btn-lg"
+                   href="{{ url_for('login') }}">
+                    Sign In
+                </a>
+            {% endif %}
+
+            <a class="btn btn-light btn-lg border"
+               href="{{ url_for('track_request') }}">
+                Track a Request
+            </a>
         </div>
+
+        <p class="home-note">
+            <span aria-hidden="true">✓</span>
+            Request tracking · Online access · Status updates
+        </p>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="mt-5" aria-labelledby="services-heading">
+    <div class="mb-4">
+        <p class="text-uppercase small fw-bold mb-2"
+           style="color: #287044; letter-spacing: 0.09em;">
+            HOW IT WORKS
+        </p>
+
+        <h2 class="section-heading h3" id="services-heading">
+            Public services, made easier
+        </h2>
+
+        <p class="text-secondary mb-0">
+            Follow a straightforward process to report and monitor
+            public service concerns.
+        </p>
     </div>
 
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body">
-                <h5>Track Progress</h5>
-                <p class="text-muted mb-0">
-                    Use your dashboard to monitor request status.
+    <div class="row g-3 g-lg-4">
+
+        <div class="col-12 col-md-4">
+            <article class="feature-card">
+                <div class="feature-icon" aria-hidden="true">01</div>
+                <h3 class="feature-title">Submit a Request</h3>
+                <p class="feature-description">
+                    Describe a public service issue, provide its
+                    location, and optionally attach an evidence photo.
                 </p>
-            </div>
+            </article>
         </div>
+
+        <div class="col-12 col-md-4">
+            <article class="feature-card">
+                <div class="feature-icon" aria-hidden="true">02</div>
+                <h3 class="feature-title">Track Progress</h3>
+                <p class="feature-description">
+                    Use your tracking code or dashboard to check
+                    the recorded status of your service request.
+                </p>
+            </article>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <article class="feature-card">
+                <div class="feature-icon" aria-hidden="true">03</div>
+                <h3 class="feature-title">Receive Updates</h3>
+                <p class="feature-description">
+                    Follow status changes and receive email
+                    notifications when updates are sent by the system.
+                </p>
+            </article>
+        </div>
+
+    </div>
+</section>
+
+<!-- SERVICE CATEGORIES -->
+<section class="mt-5" aria-labelledby="categories-heading">
+    <div class="mb-4">
+        <p class="text-uppercase small fw-bold mb-2"
+           style="color: #287044; letter-spacing: 0.09em;">
+            REPORT AN ISSUE
+        </p>
+
+        <h2 class="section-heading h3" id="categories-heading">
+            Explore Service Categories
+        </h2>
+
+        <p class="text-secondary mb-0">
+            Choose the category that best describes the public
+            service issue you want to report.
+        </p>
     </div>
 
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body">
-                <h5>Digital Access</h5>
-                <p class="text-muted mb-0">
-                    Access the demonstration portal online.
+    <div class="row g-3 g-lg-4">
+
+        <!-- Roads and Transport -->
+        <div class="col-12 col-sm-6 col-lg-4">
+            <article class="feature-card category-card">
+                <div class="feature-icon" aria-hidden="true">🛣️</div>
+                <h3 class="feature-title">Roads and Transport</h3>
+                <p class="feature-description">
+                    Report potholes, damaged roads, blocked drainage,
+                    and transport-related concerns.
                 </p>
-            </div>
+                <a class="btn btn-outline-county"
+                   href="{{ url_for('new_request', category='Roads and Transport') }}">
+                    Report an Issue →
+                </a>
+            </article>
+        </div>
+
+        <!-- Water and Sanitation -->
+        <div class="col-12 col-sm-6 col-lg-4">
+            <article class="feature-card category-card">
+                <div class="feature-icon" aria-hidden="true">💧</div>
+                <h3 class="feature-title">Water and Sanitation</h3>
+                <p class="feature-description">
+                    Report water leaks, supply interruptions,
+                    and sanitation problems.
+                </p>
+                <a class="btn btn-outline-county"
+                   href="{{ url_for('new_request', category='Water and Sanitation') }}">
+                    Report an Issue →
+                </a>
+            </article>
+        </div>
+
+        <!-- Health Services -->
+        <div class="col-12 col-sm-6 col-lg-4">
+            <article class="feature-card category-card">
+                <div class="feature-icon" aria-hidden="true">🏥</div>
+                <h3 class="feature-title">Health Services</h3>
+                <p class="feature-description">
+                    Report concerns involving county health facilities
+                    and public health services.
+                </p>
+                <a class="btn btn-outline-county"
+                   href="{{ url_for('new_request', category='Health Services') }}">
+                    Report an Issue →
+                </a>
+            </article>
+        </div>
+
+        <!-- Environment and Waste -->
+        <div class="col-12 col-sm-6 col-lg-4">
+            <article class="feature-card category-card">
+                <div class="feature-icon" aria-hidden="true">🌿</div>
+                <h3 class="feature-title">Environment and Waste</h3>
+                <p class="feature-description">
+                    Report uncollected waste, overflowing bins,
+                    and environmental concerns.
+                </p>
+                <a class="btn btn-outline-county"
+                   href="{{ url_for('new_request', category='Environment and Waste') }}">
+                    Report an Issue →
+                </a>
+            </article>
+        </div>
+
+        <!-- Business and Licensing -->
+        <div class="col-12 col-sm-6 col-lg-4">
+            <article class="feature-card category-card">
+                <div class="feature-icon" aria-hidden="true">🏪</div>
+                <h3 class="feature-title">Business and Licensing</h3>
+                <p class="feature-description">
+                    Report concerns about business permits,
+                    licences, and county business services.
+                </p>
+                <a class="btn btn-outline-county"
+                   href="{{ url_for('new_request', category='Business and Licensing') }}">
+                    Report an Issue →
+                </a>
+            </article>
+        </div>
+
+        <!-- Land and Housing -->
+        <div class="col-12 col-sm-6 col-lg-4">
+            <article class="feature-card category-card">
+                <div class="feature-icon" aria-hidden="true">🏠</div>
+                <h3 class="feature-title">Land and Housing</h3>
+                <p class="feature-description">
+                    Report land and housing concerns related
+                    to county services.
+                </p>
+                <a class="btn btn-outline-county"
+                   href="{{ url_for('new_request', category='Land and Housing') }}">
+                    Report an Issue →
+                </a>
+            </article>
+        </div>
+
+        <!-- Other Services -->
+        <div class="col-12 col-sm-6 col-lg-4">
+            <article class="feature-card category-card">
+                <div class="feature-icon" aria-hidden="true">📋</div>
+                <h3 class="feature-title">Other Services</h3>
+                <p class="feature-description">
+                    Report other public service concerns that
+                    do not fit the categories listed above.
+                </p>
+                <a class="btn btn-outline-county"
+                   href="{{ url_for('new_request', category='Other') }}">
+                    Report an Issue →
+                </a>
+            </article>
+        </div>
+
+    </div>
+</section>
+
+<!-- CALL TO ACTION -->
+<section class="home-bottom mt-5">
+    <div class="row align-items-center g-3">
+        <div class="col-12 col-lg-8">
+            <h2 class="h4 fw-bold mb-2">
+                Help make public service concerns visible.
+            </h2>
+            <p>
+                Submit clear information about an issue so it can
+                be recorded and followed up through the portal.
+            </p>
+        </div>
+
+        <div class="col-12 col-lg-4 text-lg-end">
+            {% if current_user.is_authenticated %}
+                <a class="btn btn-light fw-semibold px-4 py-2"
+                   href="{{ url_for('new_request') }}">
+                    Start a Request
+                </a>
+            {% else %}
+                <a class="btn btn-light fw-semibold px-4 py-2"
+                   href="{{ url_for('register') }}">
+                    Get Started
+                </a>
+            {% endif %}
         </div>
     </div>
-</div>
+</section>
+
+<p class="text-center text-secondary small mt-4 mb-0">
+    Demonstration project for digital public service delivery.
+</p>
+
 {% endblock %}
+```

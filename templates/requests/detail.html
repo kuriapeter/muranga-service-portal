@@ -1,124 +1,298 @@
-```html
+
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-9">
+<style>
+    .details-page {
+        max-width: 950px;
+        margin: 0 auto;
+    }
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2 class="fw-bold text-primary">Request Details</h2>
-                <p class="text-muted mb-0">
-                    View the progress of your county service request.
-                </p>
+    .details-heading {
+        color: #176b45;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .details-card {
+        border: 1px solid #e2eee6;
+        border-radius: 18px;
+        overflow: hidden;
+    }
+
+    .details-card-header {
+        background: linear-gradient(135deg, #e8f6ed, #f8fcf9);
+        border-bottom: 1px solid #e2eee6;
+        padding: 1.3rem 1.5rem;
+    }
+
+    .details-section-title {
+        color: #176b45;
+        font-weight: 750;
+        font-size: 1rem;
+        margin-bottom: 0.65rem;
+    }
+
+    .details-label {
+        color: #6b7b70;
+        font-size: 0.82rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .details-value {
+        color: #263b30;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+    .tracking-code-display {
+        display: inline-block;
+        color: #176b45;
+        background: #f0f8f2;
+        border: 1px solid #dcece1;
+        border-radius: 9px;
+        padding: 0.45rem 0.7rem;
+        font-weight: 750;
+        overflow-wrap: anywhere;
+    }
+
+    .details-status {
+        display: inline-block;
+        padding: 0.45rem 0.8rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 750;
+    }
+
+    .status-resolved {
+        background: #dff5e5;
+        color: #176b45;
+    }
+
+    .status-rejected {
+        background: #fde8e8;
+        color: #a12626;
+    }
+
+    .status-progress {
+        background: #e3efff;
+        color: #2457a7;
+    }
+
+    .status-review {
+        background: #e2f5f7;
+        color: #176777;
+    }
+
+    .status-default {
+        background: #fff1cc;
+        color: #795500;
+    }
+
+    .details-info-box {
+        background: #f8fbf9;
+        border: 1px solid #e5eee8;
+        border-radius: 12px;
+        padding: 1rem;
+    }
+
+    .evidence-image {
+        display: block;
+        max-width: 100%;
+        max-height: 460px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        margin: 0 auto;
+        border-radius: 12px;
+    }
+
+    .evidence-frame {
+        background: #f8fbf9;
+        border: 1px solid #e5eee8;
+        border-radius: 14px;
+        padding: 0.75rem;
+        text-align: center;
+    }
+
+    .details-page .btn-back {
+        border: 1px solid #b9cfc0;
+        color: #176b45;
+        border-radius: 10px;
+        font-weight: 650;
+    }
+
+    .details-page .btn-back:hover {
+        background: #edf7f0;
+        color: #105537;
+    }
+
+    @media (max-width: 576px) {
+        .details-card-header {
+            padding: 1rem 1.2rem;
+        }
+
+        .details-card-body {
+            padding: 1.2rem !important;
+        }
+
+        .details-top {
+            align-items: flex-start !important;
+            flex-direction: column;
+        }
+
+        .details-top .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="details-page py-3">
+    <div class="d-flex justify-content-between align-items-center gap-3 mb-4 details-top">
+        <div>
+            <div class="small text-uppercase fw-bold text-muted mb-2">
+                Public Service Portal
             </div>
-            <a href="{{ url_for('dashboard') }}"
-               class="btn btn-outline-secondary">
-                Back to Dashboard
-            </a>
+            <h1 class="details-heading h2 mb-2">Request Details</h1>
+            <p class="text-muted mb-0">
+                View the details and current progress of your service request.
+            </p>
         </div>
 
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-body p-4">
+        <a href="{{ url_for('dashboard') }}"
+           class="btn btn-back px-3 py-2 flex-shrink-0">
+            Back to Dashboard
+        </a>
+    </div>
 
-                <div class="d-flex flex-wrap justify-content-between gap-3 mb-4">
-                    <div>
-                        <p class="text-muted mb-1">Tracking Code</p>
-                        <h5 class="fw-bold text-primary">
-                            {{ service_request.tracking_code }}
-                        </h5>
-                    </div>
-
-                    <div>
-                        <p class="text-muted mb-1">Current Status</p>
-                        {% if service_request.status == 'Resolved' %}
-                            <span class="badge bg-success fs-6">Resolved</span>
-                        {% elif service_request.status == 'Rejected' %}
-                            <span class="badge bg-danger fs-6">Rejected</span>
-                        {% elif service_request.status == 'In Progress' %}
-                            <span class="badge bg-primary fs-6">In Progress</span>
-                        {% elif service_request.status == 'Under Review' %}
-                            <span class="badge bg-info text-dark fs-6">Under Review</span>
-                        {% else %}
-                            <span class="badge bg-warning text-dark fs-6">
-                                {{ service_request.status }}
-                            </span>
-                        {% endif %}
+    <div class="card details-card shadow-sm mb-4">
+        <div class="details-card-header">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <div class="details-label">Tracking Code</div>
+                    <div class="tracking-code-display">
+                        {{ service_request.tracking_code }}
                     </div>
                 </div>
 
-                <hr>
+                <div>
+                    <div class="details-label">Current Status</div>
+                    <span class="details-status
+                        {% if service_request.status == 'Resolved' %}status-resolved
+                        {% elif service_request.status == 'Rejected' %}status-rejected
+                        {% elif service_request.status == 'In Progress' %}status-progress
+                        {% elif service_request.status == 'Under Review' %}status-review
+                        {% else %}status-default{% endif %}">
+                        {{ service_request.status }}
+                    </span>
+                </div>
+            </div>
+        </div>
 
-                <h4 class="fw-bold">{{ service_request.title }}</h4>
+        <div class="card-body details-card-body p-4">
+            <section class="mb-4">
+                <h2 class="h4 fw-bold mb-2">
+                    {{ service_request.title }}
+                </h2>
+                <p class="text-muted mb-0">
+                    Category: <strong>{{ service_request.category }}</strong>
+                </p>
+            </section>
 
-                <p class="text-muted mb-4">
-                    Category: {{ service_request.category }}
+            <hr class="my-4">
+
+            <section class="mb-4">
+                <h3 class="details-section-title">Location of Issue</h3>
+                <div class="details-info-box">
+                    {{ service_request.location or 'Not provided' }}
+                </div>
+            </section>
+
+            <section class="mb-4">
+                <h3 class="details-section-title">Description</h3>
+                <div class="details-info-box"
+                     style="white-space: pre-wrap; overflow-wrap: anywhere;">{{ service_request.description }}</div>
+            </section>
+
+            {% if service_request.image_url %}
+            <hr class="my-4">
+
+            <section class="mb-4">
+                <h3 class="details-section-title">Evidence Photo</h3>
+                <p class="text-muted small">
+                    Photo attached to this service request.
                 </p>
 
-                <h6 class="fw-bold">Location of Issue</h6>
-                <p>{{ service_request.location or 'Not provided' }}</p>
-
-                <h6 class="fw-bold mt-4">Description</h6>
-                <p style="white-space: pre-wrap;">{{ service_request.description }}</p>
-
-                {% if service_request.image_url %}
-                    <hr>
-                    <h6 class="fw-bold">Evidence Photo</h6>
+                <div class="evidence-frame">
                     <a href="{{ service_request.image_url }}"
                        target="_blank"
-                       rel="noopener noreferrer">
+                       rel="noopener noreferrer"
+                       aria-label="Open evidence photo in a new tab">
                         <img
                             src="{{ service_request.image_url }}"
-                            alt="Evidence for this service request"
-                            class="img-fluid rounded shadow-sm"
-                            style="max-width: 100%; max-height: 450px; object-fit: contain;"
+                            alt="Evidence photo for this service request"
+                            class="evidence-image"
                             loading="lazy">
                     </a>
-                {% endif %}
+                </div>
+            </section>
+            {% endif %}
 
-                <hr>
+            <hr class="my-4">
+
+            <section class="mb-4">
+                <h3 class="details-section-title">Request Timeline</h3>
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <p class="text-muted mb-1">Date Submitted</p>
-                        <p class="fw-semibold">
-                            {% if service_request.created_at %}
-                                {{ service_request.created_at.strftime('%d %b %Y, %I:%M %p') }}
-                            {% else %}
-                                Not available
-                            {% endif %}
-                        </p>
+                        <div class="details-info-box h-100">
+                            <div class="details-label">Date Submitted</div>
+                            <div class="details-value">
+                                {% if service_request.created_at %}
+                                    {{ service_request.created_at.strftime('%d %b %Y, %I:%M %p') }}
+                                {% else %}
+                                    Not available
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
 
                     <div class="col-md-6">
-                        <p class="text-muted mb-1">Last Updated</p>
-                        <p class="fw-semibold">
-                            {% if service_request.updated_at %}
-                                {{ service_request.updated_at.strftime('%d %b %Y, %I:%M %p') }}
-                            {% else %}
-                                Not available
-                            {% endif %}
-                        </p>
+                        <div class="details-info-box h-100">
+                            <div class="details-label">Last Updated</div>
+                            <div class="details-value">
+                                {% if service_request.updated_at %}
+                                    {{ service_request.updated_at.strftime('%d %b %Y, %I:%M %p') }}
+                                {% else %}
+                                    Not available
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </section>
 
-                <hr>
+            <hr class="my-4">
 
-                <h6 class="fw-bold">Staff Notes</h6>
+            <section>
+                <h3 class="details-section-title">Staff Notes</h3>
+
                 {% if service_request.staff_notes %}
-                    <div class="alert alert-light border">
-                        {{ service_request.staff_notes }}
-                    </div>
+                <div class="alert alert-light border mb-0" role="status"
+                     style="white-space: pre-wrap; overflow-wrap: anywhere;">
+                    {{ service_request.staff_notes }}
+                </div>
                 {% else %}
-                    <p class="text-muted">
-                        No staff notes have been added yet.
-                    </p>
+                <div class="details-info-box text-muted">
+                    No staff notes have been added yet.
+                </div>
                 {% endif %}
-
-            </div>
+            </section>
         </div>
-
     </div>
+
+    <p class="text-center text-muted small mb-0">
+        Keep your tracking code safe so you can easily follow your request.
+    </p>
 </div>
 {% endblock %}
-```

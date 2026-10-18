@@ -2,187 +2,545 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="py-4">
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+
+<style>
+    .admin-heading {
+        color: #173d27;
+        font-weight: 800;
+        letter-spacing: -0.035em;
+    }
+
+    .admin-subtitle {
+        color: #68756c;
+        line-height: 1.7;
+    }
+
+    .admin-role {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.65rem 0.9rem;
+        color: #14532d;
+        background: #eaf5ed;
+        border: 1px solid #cce6d2;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .admin-stat {
+        height: 100%;
+        padding: 1.2rem;
+        background: #fff;
+        border: 1px solid #e4eae5;
+        border-top: 4px solid #14532d;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(30, 50, 35, 0.04);
+    }
+
+    .admin-stat-label {
+        color: #68756c;
+        font-size: 0.85rem;
+        font-weight: 650;
+    }
+
+    .admin-stat-number {
+        margin: 0.45rem 0;
+        color: #203b2a;
+        font-size: clamp(1.7rem, 3vw, 2.15rem);
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .admin-stat.total { border-top-color: #14532d; }
+    .admin-stat.pending { border-top-color: #d99b18; }
+    .admin-stat.progress { border-top-color: #2563eb; }
+    .admin-stat.resolved { border-top-color: #21834b; }
+    .admin-stat.rejected { border-top-color: #dc2626; }
+
+    .admin-panel {
+        height: 100%;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #e4eae5;
+        border-radius: 16px;
+        box-shadow: 0 5px 20px rgba(30, 50, 35, 0.04);
+    }
+
+    .admin-panel-header {
+        padding: 1.2rem 1.3rem 0;
+    }
+
+    .admin-panel-title {
+        color: #203b2a;
+        font-size: 1.05rem;
+        font-weight: 750;
+    }
+
+    .admin-panel-description {
+        color: #68756c;
+        font-size: 0.85rem;
+    }
+
+    .admin-chart {
+        position: relative;
+        height: 280px;
+        padding: 0.5rem 1rem 1.1rem;
+    }
+
+    .admin-table th {
+        padding: 0.9rem 0.75rem;
+        background: #f5f8f5;
+        color: #5c6a60;
+        border-bottom-color: #e4eae5;
+        font-size: 0.76rem;
+        font-weight: 750;
+        letter-spacing: 0.035em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .admin-table td {
+        padding: 0.9rem 0.75rem;
+        border-bottom-color: #edf1ed;
+        vertical-align: middle;
+    }
+
+    .admin-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .admin-tracking {
+        color: #14532d;
+        font-size: 0.82rem;
+        font-weight: 750;
+        overflow-wrap: anywhere;
+    }
+
+    .admin-request-link {
+        color: #14532d;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .admin-request-link:hover {
+        color: #103f24;
+        text-decoration: underline;
+    }
+
+    .admin-status {
+        display: inline-block;
+        padding: 0.4rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+    .admin-status-submitted {
+        color: #79520b;
+        background: #fff2cc;
+    }
+
+    .admin-status-review {
+        color: #075985;
+        background: #e0f2fe;
+    }
+
+    .admin-status-progress {
+        color: #1d4ed8;
+        background: #dbeafe;
+    }
+
+    .admin-status-resolved {
+        color: #166534;
+        background: #dcfce7;
+    }
+
+    .admin-status-rejected {
+        color: #991b1b;
+        background: #fee2e2;
+    }
+
+    .admin-empty {
+        padding: 3rem 1rem;
+        text-align: center;
+    }
+
+    .admin-action-btn {
+        white-space: nowrap;
+    }
+
+    @media (max-width: 575.98px) {
+        .admin-stat {
+            padding: 1rem;
+        }
+
+        .admin-panel-header {
+            padding: 1rem 1rem 0;
+        }
+
+        .admin-chart {
+            height: 250px;
+            padding: 0.25rem 0.6rem 1rem;
+        }
+
+        .admin-table {
+            font-size: 0.88rem;
+        }
+    }
+</style>
+
+<div class="py-3 py-md-4">
+
+
+    <!-- Page heading -->
+    <div class="d-flex flex-column flex-sm-row
+                justify-content-between align-items-sm-center
+                gap-3 mb-4">
+
         <div>
-            <h1 class="fw-bold text-primary mb-1">Administration Dashboard</h1>
-            <p class="text-muted mb-0">Monitor public service requests and track progress.</p>
+            <p class="text-uppercase small fw-bold mb-2"
+               style="color: #287044; letter-spacing: 0.09em;">
+                SYSTEM MANAGEMENT
+            </p>
+
+            <h1 class="admin-heading h2 mb-2">
+                Administration Dashboard
+            </h1>
+
+            <p class="admin-subtitle mb-0">
+                Monitor service requests, review submissions,
+                and record status updates.
+            </p>
         </div>
-        <span class="badge text-bg-primary fs-6 py-2 px-3">
-            <i class="bi bi-shield-check me-1"></i> Administrator
-        </span>
+
+        <div class="d-flex flex-column align-items-start align-items-sm-end gap-2">
+            <span class="admin-role">
+                <span aria-hidden="true">✓</span>
+                {% if is_overall_admin %}
+                    Overall Administrator
+                {% else %}
+                    Department Administrator
+                {% endif %}
+            </span>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <a href="{{ url_for('audit_logs') }}"
+                   class="btn btn-outline-primary admin-action-btn">
+                    <i class="bi bi-shield-check me-1"
+                       aria-hidden="true"></i>
+                    Audit Logs
+                </a>
+
+                {% if is_overall_admin %}
+                <a href="{{ url_for('create_department_admin') }}"
+                   class="btn btn-success admin-action-btn">
+                    <i class="bi bi-person-plus"
+                       aria-hidden="true"></i>
+                    Create Department Admin
+                </a>
+                {% endif %}
+
+            </div>
+        </div>
     </div>
+
 
     <!-- Summary cards -->
-    <div class="row g-3 mb-4">
-        <div class="col-6 col-xl">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="text-muted small mb-2">Total Requests</div>
-                    <h2 class="fw-bold mb-0">{{ total_requests }}</h2>
-                    <small class="text-muted">All submissions</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-xl">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="text-muted small mb-2">Awaiting Review</div>
-                    <h2 class="fw-bold text-warning mb-0">{{ pending_requests }}</h2>
-                    <small class="text-muted">Submitted or under review</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-xl">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="text-muted small mb-2">In Progress</div>
-                    <h2 class="fw-bold text-primary mb-0">{{ in_progress_requests }}</h2>
-                    <small class="text-muted">Being handled</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-xl">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="text-muted small mb-2">Resolved</div>
-                    <h2 class="fw-bold text-success mb-0">{{ resolved_requests }}</h2>
-                    <small class="text-muted">Successfully resolved</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-xl">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="text-muted small mb-2">Rejected</div>
-                    <h2 class="fw-bold text-danger mb-0">{{ rejected_requests }}</h2>
-                    <small class="text-muted">Not approved</small>
-                </div>
-            </div>
-        </div>
-    </div>
+    <section aria-label="Request statistics">
+        <div class="row g-3 mb-4">
 
-    <!-- Charts -->
-    <div class="row g-3 mb-4">
-        <div class="col-lg-5">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="fw-bold mb-1">Request Status</h5>
-                    <p class="text-muted small">Current distribution by status</p>
-                    <div style="height: 280px; position: relative;">
-                        <canvas id="statusChart"
-                                role="img"
-                                aria-label="Chart showing service requests by status"></canvas>
-                    </div>
+            <div class="col-6 col-xl">
+                <div class="admin-stat total">
+                    <div class="admin-stat-label">Total Requests</div>
+                    <p class="admin-stat-number">{{ total_requests }}</p>
+                    <small class="text-secondary">Requests in your scope</small>
                 </div>
             </div>
-        </div>
-        <div class="col-lg-7">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="fw-bold mb-1">Request Activity</h5>
-                    <p class="text-muted small">Submissions over the last seven calendar days</p>
-                    <div style="height: 280px; position: relative;">
-                        <canvas id="activityChart"
-                                role="img"
-                                aria-label="Chart showing daily service request submissions"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Requests table -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white border-0 pt-4 px-4">
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                <div>
-                    <h5 class="fw-bold mb-1">Citizen Service Requests</h5>
-                    <p class="text-muted small mb-0">
-                        Search, filter, and update requests.
+            <div class="col-6 col-xl">
+                <div class="admin-stat pending">
+                    <div class="admin-stat-label">Awaiting Review</div>
+                    <p class="admin-stat-number text-warning">
+                        {{ pending_requests }}
+                    </p>
+                    <small class="text-secondary">Pending review</small>
+                </div>
+            </div>
+
+            <div class="col-6 col-xl">
+                <div class="admin-stat progress">
+                    <div class="admin-stat-label">In Progress</div>
+                    <p class="admin-stat-number" style="color: #2563eb;">
+                        {{ in_progress_requests }}
+                    </p>
+                    <small class="text-secondary">Being handled</small>
+                </div>
+            </div>
+
+            <div class="col-6 col-xl">
+                <div class="admin-stat resolved">
+                    <div class="admin-stat-label">Resolved</div>
+                    <p class="admin-stat-number text-success">
+                        {{ resolved_requests }}
+                    </p>
+                    <small class="text-secondary">Marked resolved</small>
+                </div>
+            </div>
+
+            <div class="col-6 col-xl">
+                <div class="admin-stat rejected">
+                    <div class="admin-stat-label">Rejected</div>
+                    <p class="admin-stat-number text-danger">
+                        {{ rejected_requests }}
+                    </p>
+                    <small class="text-secondary">Marked rejected</small>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Analytics charts -->
+    <section class="row g-3 mb-4" aria-label="Request analytics">
+
+        <div class="col-12 col-lg-5">
+            <div class="admin-panel">
+                <div class="admin-panel-header">
+                    <h2 class="admin-panel-title mb-1">Request Status</h2>
+                    <p class="admin-panel-description mb-0">
+                        Current distribution by status
                     </p>
                 </div>
-                <span class="badge rounded-pill text-bg-light border">
+
+                <div class="admin-chart">
+                    <canvas id="statusChart"
+                            role="img"
+                            aria-label="Chart showing service requests by status">
+                        Request status distribution chart.
+                    </canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-7">
+            <div class="admin-panel">
+                <div class="admin-panel-header">
+                    <h2 class="admin-panel-title mb-1">Request Activity</h2>
+                    <p class="admin-panel-description mb-0">
+                        Submissions over the last seven calendar days
+                    </p>
+                </div>
+
+                <div class="admin-chart">
+                    <canvas id="activityChart"
+                            role="img"
+                            aria-label="Chart showing daily service request submissions">
+                        Daily request activity chart.
+                    </canvas>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Request management -->
+    <section class="admin-panel" aria-labelledby="requests-heading">
+
+        <div class="admin-panel-header pb-3">
+            <div class="d-flex flex-column flex-sm-row
+                        justify-content-between align-items-sm-center gap-2">
+
+                <div>
+                    <h2 class="admin-panel-title mb-1"
+                        id="requests-heading">
+                        Citizen Service Requests
+                    </h2>
+
+                    <p class="admin-panel-description mb-0">
+                        Search submissions, filter statuses, and save updates.
+                    </p>
+                </div>
+
+                <span class="badge rounded-pill text-bg-light border px-3 py-2">
                     {{ service_requests|length }} records
                 </span>
             </div>
         </div>
 
-        <div class="card-body px-4">
+        <div class="p-3 p-md-4 pt-0">
+
             {% if service_requests %}
-            <div class="row g-2 mb-3">
-                <div class="col-md-7">
-                    <label for="requestSearch" class="form-label small fw-semibold">
+
+            <!-- Search and status filter -->
+            <div class="row g-3 mb-3">
+
+                <div class="col-12 col-lg-7">
+                    <label for="requestSearch"
+                           class="form-label small fw-semibold">
                         Search requests
                     </label>
-                    <input type="search" id="requestSearch"
+
+                    <input type="search"
+                           id="requestSearch"
                            class="form-control"
-                           placeholder="Tracking code, citizen, title, category...">
+                           placeholder="Tracking code, citizen, title, category..."
+                           autocomplete="off"
+                           aria-controls="requestsTable">
                 </div>
-                <div class="col-md-5">
-                    <label for="statusFilter" class="form-label small fw-semibold">
+
+                <div class="col-12 col-lg-5">
+                    <label for="statusFilter"
+                           class="form-label small fw-semibold">
                         Filter by status
                     </label>
-                    <select id="statusFilter" class="form-select">
+
+                    <select id="statusFilter"
+                            class="form-select"
+                            aria-controls="requestsTable">
                         <option value="">All statuses</option>
                         {% for status in status_labels %}
                         <option value="{{ status }}">{{ status }}</option>
                         {% endfor %}
                     </select>
                 </div>
+
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle" id="requestsTable">
-                    <thead class="table-light">
+                <table class="table table-hover admin-table align-middle"
+                       id="requestsTable">
+                    <thead>
                         <tr>
-                            <th>Tracking Code</th>
-                            <th>Citizen</th>
-                            <th>Request</th>
-                            <th>Category</th>
-                            <th>Status</th>
-                            <th style="min-width: 230px;">Update Request</th>
+                            <th scope="col">Tracking Code</th>
+                            <th scope="col">Citizen</th>
+                            <th scope="col">Request</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Department</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" style="min-width: 230px;">
+                                Update Request
+                            </th>
                         </tr>
                     </thead>
+
                     <tbody>
                         {% for item in service_requests %}
                         <tr data-status="{{ item.status }}"
-                            data-search="{{ (item.tracking_code ~ ' ' ~ item.user.full_name ~ ' ' ~ item.title ~ ' ' ~ item.category)|lower }}">
+                            data-search="{{ (item.tracking_code ~ ' ' ~ item.user.full_name ~ ' ' ~ item.title ~ ' ' ~ item.category ~ ' ' ~ (item.department.name if item.department else 'Unassigned'))|lower }}">
+
                             <td>
-                                <span class="fw-semibold text-nowrap">
+                                <span class="admin-tracking">
                                     {{ item.tracking_code }}
                                 </span>
                             </td>
+
                             <td>{{ item.user.full_name }}</td>
+
                             <td>
-                                <a class="fw-semibold text-decoration-none"
+                                <a class="admin-request-link"
                                    href="{{ url_for('view_request', request_id=item.id) }}">
                                     {{ item.title }}
                                 </a>
-                                <div class="text-muted small">
-                                    {{ item.created_at.strftime('%d %b %Y') if item.created_at else '' }}
+
+                                <div class="text-secondary small mt-1">
+                                    {% if item.created_at %}
+                                        {{ item.created_at.strftime('%d %b %Y') }}
+                                    {% endif %}
                                 </div>
                             </td>
+
                             <td>{{ item.category }}</td>
+
                             <td>
-                                <span class="badge
-                                    {% if item.status == 'Resolved' %}text-bg-success
-                                    {% elif item.status == 'Rejected' %}text-bg-danger
-                                    {% elif item.status == 'In Progress' %}text-bg-primary
-                                    {% elif item.status == 'Under Review' %}text-bg-info
-                                    {% else %}text-bg-warning{% endif %}">
-                                    {{ item.status }}
-                                </span>
-                            </td>
-                            <td>
+                                {% if item.department %}
+                                    <span class="badge text-bg-light border">
+                                        {{ item.department.name }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-secondary small">
+                                        Unassigned
+                                    </span>
+                                {% endif %}
+
+                                {% if is_overall_admin %}
                                 <form method="POST"
-                                      action="{{ url_for('update_request', request_id=item.id) }}">
-                                    <input type="hidden" name="csrf_token"
+                                      action="{{ url_for('assign_request_department', request_id=item.id) }}"
+                                      class="mt-2">
+
+                                    <input type="hidden"
+                                           name="csrf_token"
                                            value="{{ csrf_token() }}">
 
                                     <label class="visually-hidden"
-                                           for="status-{{ item.id }}">Request status</label>
-                                    <select id="status-{{ item.id }}" name="status"
+                                           for="department-{{ item.id }}">
+                                        Assign department
+                                    </label>
+
+                                    <select id="department-{{ item.id }}"
+                                            name="department_id"
+                                            class="form-select form-select-sm mb-2"
+                                            required>
+                                        <option value="">Assign department</option>
+                                        {% for department in departments %}
+                                        {% if department.is_active %}
+                                        <option value="{{ department.id }}"
+                                            {% if item.department_id == department.id %}selected{% endif %}>
+                                            {{ department.name }}
+                                        </option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+
+                                    <button type="submit"
+                                            class="btn btn-outline-success btn-sm w-100">
+                                        Assign / Transfer
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if item.status == 'Resolved' %}
+                                    <span class="admin-status admin-status-resolved">
+                                        Resolved
+                                    </span>
+                                {% elif item.status == 'Rejected' %}
+                                    <span class="admin-status admin-status-rejected">
+                                        Rejected
+                                    </span>
+                                {% elif item.status == 'In Progress' %}
+                                    <span class="admin-status admin-status-progress">
+                                        In Progress
+                                    </span>
+                                {% elif item.status == 'Under Review' %}
+                                    <span class="admin-status admin-status-review">
+                                        Under Review
+                                    </span>
+                                {% else %}
+                                    <span class="admin-status admin-status-submitted">
+                                        {{ item.status }}
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <form method="POST"
+                                      action="{{ url_for('update_request', request_id=item.id) }}">
+
+                                    <input type="hidden"
+                                           name="csrf_token"
+                                           value="{{ csrf_token() }}">
+
+                                    <label class="visually-hidden"
+                                           for="status-{{ item.id }}">
+                                        Request status
+                                    </label>
+
+                                    <select id="status-{{ item.id }}"
+                                            name="status"
                                             class="form-select form-select-sm mb-2"
                                             required>
                                         {% for status in status_labels %}
@@ -194,112 +552,137 @@
                                     </select>
 
                                     <label class="visually-hidden"
-                                           for="notes-{{ item.id }}">Staff notes</label>
+                                           for="notes-{{ item.id }}">
+                                        Staff notes
+                                    </label>
+
                                     <textarea id="notes-{{ item.id }}"
                                               name="staff_notes"
                                               class="form-control form-control-sm mb-2"
                                               rows="2"
                                               placeholder="Staff notes...">{{ item.staff_notes or '' }}</textarea>
 
-                                    <button type="submit" class="btn btn-primary btn-sm w-100">
+                                    <button type="submit"
+                                            class="btn btn-county btn-sm w-100">
                                         Save Update
                                     </button>
                                 </form>
                             </td>
+
                         </tr>
                         {% endfor %}
+
                         <tr id="noMatches" class="d-none">
-                            <td colspan="6" class="text-center text-muted py-4">
+                            <td colspan="7"
+                                class="text-center text-secondary py-4">
                                 No requests match your search or filter.
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+
             {% else %}
-            <div class="text-center py-5">
-                <h5 class="fw-bold">No service requests yet</h5>
-                <p class="text-muted mb-0">
+
+            <div class="admin-empty">
+                <div class="fs-1 mb-3" aria-hidden="true">&#128203;</div>
+
+                <h3 class="h5 fw-bold">No service requests yet</h3>
+
+                <p class="text-secondary mb-0">
                     Citizen requests will appear here when submitted.
                 </p>
             </div>
+
             {% endif %}
+
         </div>
-    </div>
+    </section>
+
+    <p class="text-center text-secondary small mt-4 mb-0">
+        Review request details before saving status changes.
+    </p>
+
 </div>
 
-<!-- Charts library -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    const statusCanvas = document.getElementById("statusChart");
+    const activityCanvas = document.getElementById("activityChart");
+
     const statusLabels = {{ status_labels|tojson }};
     const statusCounts = {{ status_counts|tojson }};
     const dailyLabels = {{ daily_labels|tojson }};
     const dailyCounts = {{ daily_counts|tojson }};
 
     if (typeof Chart !== "undefined") {
-        new Chart(document.getElementById("statusChart"), {
-            type: "doughnut",
-            data: {
-                labels: statusLabels,
-                datasets: [{
-                    data: statusCounts,
-                    backgroundColor: [
-                        "#fbbf24",
-                        "#06b6d4",
-                        "#3b82f6",
-                        "#16a34a",
-                        "#dc2626"
-                    ],
-                    borderWidth: 2,
-                    borderColor: "#ffffff"
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: "bottom"
-                    }
-                }
-            }
-        });
-
-        new Chart(document.getElementById("activityChart"), {
-            type: "line",
-            data: {
-                labels: dailyLabels,
-                datasets: [{
-                    label: "Requests",
-                    data: dailyCounts,
-                    borderColor: "#2563eb",
-                    backgroundColor: "rgba(37, 99, 235, 0.12)",
-                    fill: true,
-                    tension: 0.3,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0
+        if (statusCanvas) {
+            new Chart(statusCanvas, {
+                type: "doughnut",
+                data: {
+                    labels: statusLabels,
+                    datasets: [{
+                        data: statusCounts,
+                        backgroundColor: [
+                            "#d99b18", "#0891b2", "#2563eb",
+                            "#21834b", "#dc2626"
+                        ],
+                        borderWidth: 3,
+                        borderColor: "#ffffff",
+                        hoverOffset: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: "bottom",
+                            labels: {
+                                usePointStyle: true,
+                                padding: 18
+                            }
                         }
                     }
+                }
+            });
+        }
+
+        if (activityCanvas) {
+            new Chart(activityCanvas, {
+                type: "line",
+                data: {
+                    labels: dailyLabels,
+                    datasets: [{
+                        label: "Requests",
+                        data: dailyCounts,
+                        borderColor: "#14532d",
+                        backgroundColor: "rgba(20, 83, 45, 0.10)",
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: "#14532d",
+                        borderWidth: 2
+                    }]
                 },
-                plugins: {
-                    legend: {
-                        display: false
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     const searchInput = document.getElementById("requestSearch");
@@ -318,16 +701,15 @@ document.addEventListener("DOMContentLoaded", function () {
             let visibleCount = 0;
 
             rows.forEach(function (row) {
-                const matchesSearch = row.dataset.search.includes(query);
-                const matchesStatus = !selectedStatus ||
-                    row.dataset.status === selectedStatus;
+                const searchableText = row.dataset.search || "";
+                const matchesSearch = searchableText.includes(query);
+                const matchesStatus =
+                    !selectedStatus || row.dataset.status === selectedStatus;
                 const visible = matchesSearch && matchesStatus;
 
                 row.classList.toggle("d-none", !visible);
 
-                if (visible) {
-                    visibleCount++;
-                }
+                if (visible) visibleCount++;
             });
 
             if (noMatches) {
@@ -340,4 +722,5 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 </script>
+
 {% endblock %}
