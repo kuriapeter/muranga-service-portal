@@ -162,6 +162,11 @@
         background: #fee2e2;
     }
 
+    .admin-evidence-link {
+        display: inline-block;
+        white-space: nowrap;
+    }
+
     .admin-empty {
         padding: 3rem 1rem;
         text-align: center;
@@ -192,7 +197,6 @@
 </style>
 
 <div class="py-3 py-md-4">
-
 
     <!-- Page heading -->
     <div class="d-flex flex-column flex-sm-row
@@ -246,7 +250,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- Summary cards -->
     <section aria-label="Request statistics">
@@ -412,6 +415,7 @@
             <div class="table-responsive">
                 <table class="table table-hover admin-table align-middle"
                        id="requestsTable">
+
                     <thead>
                         <tr>
                             <th scope="col">Tracking Code</th>
@@ -420,6 +424,7 @@
                             <th scope="col">Category</th>
                             <th scope="col">Department</th>
                             <th scope="col">Status</th>
+                            <th scope="col">Evidence</th>
                             <th scope="col" style="min-width: 230px;">
                                 Update Request
                             </th>
@@ -502,6 +507,7 @@
                                 {% endif %}
                             </td>
 
+                            <!-- Status column -->
                             <td>
                                 {% if item.status == 'Resolved' %}
                                     <span class="admin-status admin-status-resolved">
@@ -526,6 +532,25 @@
                                 {% endif %}
                             </td>
 
+                            <!-- Evidence image column -->
+                            <td>
+                                {% if item.image_url %}
+                                    <a href="{{ item.image_url }}"
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       class="btn btn-outline-success btn-sm admin-evidence-link">
+                                        <i class="bi bi-image me-1"
+                                           aria-hidden="true"></i>
+                                        View image
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted small">
+                                        No image
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Update request column -->
                             <td>
                                 <form method="POST"
                                       action="{{ url_for('update_request', request_id=item.id) }}">
@@ -573,12 +598,13 @@
                         {% endfor %}
 
                         <tr id="noMatches" class="d-none">
-                            <td colspan="7"
+                            <td colspan="8"
                                 class="text-center text-secondary py-4">
                                 No requests match your search or filter.
                             </td>
                         </tr>
                     </tbody>
+
                 </table>
             </div>
 
@@ -626,8 +652,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     datasets: [{
                         data: statusCounts,
                         backgroundColor: [
-                            "#d99b18", "#0891b2", "#2563eb",
-                            "#21834b", "#dc2626"
+                            "#d99b18",
+                            "#0891b2",
+                            "#2563eb",
+                            "#21834b",
+                            "#dc2626"
                         ],
                         borderWidth: 3,
                         borderColor: "#ffffff",
