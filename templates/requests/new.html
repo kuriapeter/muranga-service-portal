@@ -91,11 +91,101 @@
         color: #105537;
     }
 
+    .request-progress {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 1.75rem;
+    }
+
+    .progress-step {
+        text-align: center;
+        min-width: 0;
+    }
+
+    .progress-step-number {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 2px solid #d8e4dc;
+        color: #66756b;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 7px;
+        font-weight: 750;
+    }
+
+    .progress-step-label {
+        font-size: 0.78rem;
+        color: #66756b;
+        font-weight: 600;
+    }
+
+    .progress-step.active .progress-step-number,
+    .progress-step.completed .progress-step-number {
+        background: #176b45;
+        border-color: #176b45;
+        color: #fff;
+    }
+
+    .progress-step.active .progress-step-label,
+    .progress-step.completed .progress-step-label {
+        color: #176b45;
+    }
+
+    .request-progress-track {
+        height: 5px;
+        background: #e8f0ea;
+        border-radius: 20px;
+        overflow: hidden;
+        margin: 0 0 1.75rem;
+    }
+
+    .request-progress-bar {
+        height: 100%;
+        width: 25%;
+        background: #238653;
+        transition: width 0.25s ease;
+    }
+
     .request-tip {
         background: #f3faf5;
         border: 1px solid #e0eee5;
         border-radius: 12px;
         padding: 1rem;
+    }
+
+    .request-step-title {
+        color: #176b45;
+        font-weight: 750;
+    }
+
+    .review-row {
+        padding: 0.9rem 0;
+        border-bottom: 1px solid #e5eee8;
+        overflow-wrap: anywhere;
+    }
+
+    .review-row:last-child {
+        border-bottom: 0;
+    }
+
+    .review-label {
+        color: #66756b;
+        font-size: 0.85rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .review-value {
+        color: #263b30;
+        font-weight: 600;
+        white-space: pre-wrap;
+    }
+
+    .request-page [hidden] {
+        display: none !important;
     }
 
     @media (max-width: 576px) {
@@ -113,6 +203,15 @@
 
         .request-actions .btn {
             width: 100%;
+        }
+
+        .progress-step-label {
+            font-size: 0.68rem;
+        }
+
+        .progress-step-number {
+            width: 32px;
+            height: 32px;
         }
     }
 </style>
@@ -134,120 +233,273 @@
 
     <div class="card request-card shadow-sm">
         <div class="request-card-header">
-            <h2 class="h5 fw-bold mb-2">Request details</h2>
+            <h2 class="h5 fw-bold mb-2">Report a public service issue</h2>
             <p class="text-muted mb-0">
-                Provide clear information so the relevant team can understand the issue.
+                Complete each step, review your information, and submit your request.
             </p>
         </div>
 
         <div class="card-body request-card-body p-4">
-            <form method="POST"
+
+            <div class="request-progress" aria-label="Form progress">
+                <div class="progress-step active" data-progress-step="0">
+                    <div class="progress-step-number">1</div>
+                    <div class="progress-step-label">Details</div>
+                </div>
+
+                <div class="progress-step" data-progress-step="1">
+                    <div class="progress-step-number">2</div>
+                    <div class="progress-step-label">Location</div>
+                </div>
+
+                <div class="progress-step" data-progress-step="2">
+                    <div class="progress-step-number">3</div>
+                    <div class="progress-step-label">Evidence</div>
+                </div>
+
+                <div class="progress-step" data-progress-step="3">
+                    <div class="progress-step-number">4</div>
+                    <div class="progress-step-label">Review</div>
+                </div>
+            </div>
+
+            <div class="request-progress-track"
+                 role="progressbar"
+                 aria-label="Form completion progress"
+                 aria-valuemin="1"
+                 aria-valuemax="4"
+                 aria-valuenow="1"
+                 id="requestProgressTrack">
+                <div class="request-progress-bar"
+                     id="requestProgressBar"></div>
+            </div>
+
+            <form id="serviceRequestForm"
+                  method="POST"
                   action="{{ url_for('new_request') }}"
-                  enctype="multipart/form-data">
+                  enctype="multipart/form-data"
+                  novalidate>
 
                 <input type="hidden" name="csrf_token"
                        value="{{ csrf_token() }}">
 
-                <div class="mb-4">
-                    <label for="title" class="form-label">
-                        Request title <span class="text-danger">*</span>
-                    </label>
+                <!-- STEP 1: DETAILS -->
+                <section class="form-step" data-step="0">
+                    <h3 class="request-step-title h5 mb-2">
+                        Step 1: Request details
+                    </h3>
 
-                    <input type="text" id="title" name="title"
-                           class="form-control" maxlength="150"
-                           placeholder="e.g. Repair a damaged road"
-                           autocomplete="off" required>
+                    <p class="text-muted small mb-4">
+                        Give your complaint a clear title and select the relevant service.
+                    </p>
 
-                    <div class="request-help">
-                        Use a short, clear title describing the problem.
+                    <div class="mb-4">
+                        <label for="title" class="form-label">
+                            Request title <span class="text-danger">*</span>
+                        </label>
+
+                        <input type="text"
+                               id="title"
+                               name="title"
+                               class="form-control"
+                               maxlength="150"
+                               placeholder="e.g. Repair a damaged road"
+                               autocomplete="off"
+                               required>
+
+                        <div class="request-help">
+                            Use a short, clear title describing the problem.
+                        </div>
                     </div>
-                </div>
 
-                <div class="mb-4">
-                    <label for="category" class="form-label">
-                        Service category <span class="text-danger">*</span>
-                    </label>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">
+                            Service category <span class="text-danger">*</span>
+                        </label>
 
-                    <select id="category" name="category"
-                            class="form-select" required>
-                        <option value="">Choose a category</option>
+                        <select id="category"
+                                name="category"
+                                class="form-select"
+                                required>
+                            <option value="">Choose a category</option>
 
-                        {% for category in categories %}
-                        <option value="{{ category }}"
-                            {% if category == (selected_category|default('')) %}
-                                selected
-                            {% endif %}>
-                            {{ category }}
-                        </option>
-                        {% endfor %}
-                    </select>
+                            {% for category in categories %}
+                            <option value="{{ category }}"
+                                {% if category == (selected_category|default('')) %}
+                                    selected
+                                {% endif %}>
+                                {{ category }}
+                            </option>
+                            {% endfor %}
+                        </select>
 
-                    <div class="request-help">
-                        Choose the category that best matches the issue.
-                        You can change the preselected category if needed.
+                        <div class="request-help">
+                            Select the category that best matches the issue.
+                        </div>
                     </div>
-                </div>
+                </section>
 
-                <div class="mb-4">
-                    <label for="location" class="form-label">
-                        Location of the issue <span class="text-danger">*</span>
-                    </label>
+                <!-- STEP 2: LOCATION AND DESCRIPTION -->
+                <section class="form-step" data-step="1" hidden>
+                    <h3 class="request-step-title h5 mb-2">
+                        Step 2: Location and description
+                    </h3>
 
-                    <input type="text" id="location" name="location"
-                           class="form-control" maxlength="250"
-                           placeholder="e.g. Kenol, near the main market"
-                           autocomplete="street-address" required>
+                    <p class="text-muted small mb-4">
+                        Help the county team understand where the problem occurred and what needs attention.
+                    </p>
 
-                    <div class="request-help">
-                        Include the village, estate, road, landmark, or nearest public facility.
+                    <div class="mb-4">
+                        <label for="location" class="form-label">
+                            Location of the issue <span class="text-danger">*</span>
+                        </label>
+
+                        <input type="text"
+                               id="location"
+                               name="location"
+                               class="form-control"
+                               maxlength="250"
+                               placeholder="e.g. Kenol, near the main market"
+                               autocomplete="street-address"
+                               required>
+
+                        <div class="request-help">
+                            Include the village, estate, road, landmark, or nearest public facility.
+                        </div>
                     </div>
-                </div>
 
-                <div class="mb-4">
-                    <label for="description" class="form-label">
-                        Description <span class="text-danger">*</span>
-                    </label>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">
+                            Description <span class="text-danger">*</span>
+                        </label>
 
-                    <textarea id="description" name="description"
-                              class="form-control" rows="5"
-                              placeholder="Explain what happened, where it occurred, and what needs attention..."
-                              required></textarea>
+                        <textarea id="description"
+                                  name="description"
+                                  class="form-control"
+                                  rows="5"
+                                  placeholder="Explain what happened, where it occurred, and what needs attention..."
+                                  required></textarea>
 
-                    <div class="request-help">
-                        Be specific and include any details that may help the county team assess the issue.
+                        <div class="request-help">
+                            Include details that may help the county team assess the issue.
+                        </div>
                     </div>
-                </div>
+                </section>
 
-                <div class="mb-4">
-                    <label for="image" class="form-label">
-                        Supporting photo
-                        <span class="text-muted fw-normal">(optional)</span>
-                    </label>
+                <!-- STEP 3: EVIDENCE -->
+                <section class="form-step" data-step="2" hidden>
+                    <h3 class="request-step-title h5 mb-2">
+                        Step 3: Supporting evidence
+                    </h3>
 
-                    <input type="file" id="image" name="image"
-                           class="form-control"
-                           accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+                    <p class="text-muted small mb-4">
+                        You may attach a photo to help illustrate the issue. This step is optional.
+                    </p>
 
-                    <div class="request-help">
-                        JPG, PNG, or WEBP. Maximum size: 5 MB.
-                        A photo can help illustrate the reported issue.
+                    <div class="mb-4">
+                        <label for="image" class="form-label">
+                            Supporting photo
+                            <span class="text-muted fw-normal">(optional)</span>
+                        </label>
+
+                        <input type="file"
+                               id="image"
+                               name="image"
+                               class="form-control"
+                               accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+
+                        <div class="request-help">
+                            Accepted formats: JPG, JPEG, PNG, and WEBP.
+                            Maximum size: 5 MB.
+                        </div>
+
+                        <div id="imageError"
+                             class="text-danger small mt-2"
+                             role="alert"
+                             hidden>
+                            Please select an image file no larger than 5 MB.
+                        </div>
                     </div>
-                </div>
 
-                <div class="request-tip mb-4">
-                    <strong class="d-block mb-1">Before submitting</strong>
-                    <span class="text-muted small">
-                        Check that your title, category, location, and description are accurate.
-                        Keep your tracking code after submission so you can follow the request's progress.
-                    </span>
-                </div>
+                    <div class="request-tip">
+                        <strong class="d-block mb-1">Protect your privacy</strong>
+                        <span class="text-muted small">
+                            Upload only an image relevant to the reported issue.
+                            Avoid including unnecessary personal or sensitive information.
+                        </span>
+                    </div>
+                </section>
 
-                <div class="d-flex gap-2 request-actions">
-                    <button type="submit" class="btn btn-county">
+                <!-- STEP 4: REVIEW -->
+                <section class="form-step" data-step="3" hidden>
+                    <h3 class="request-step-title h5 mb-2">
+                        Step 4: Review your request
+                    </h3>
+
+                    <p class="text-muted small mb-4">
+                        Check the information below before submitting.
+                    </p>
+
+                    <div class="border rounded-3 px-3 mb-4">
+                        <div class="review-row">
+                            <div class="review-label">Request title</div>
+                            <div class="review-value" id="reviewTitle">Not provided</div>
+                        </div>
+
+                        <div class="review-row">
+                            <div class="review-label">Service category</div>
+                            <div class="review-value" id="reviewCategory">Not selected</div>
+                        </div>
+
+                        <div class="review-row">
+                            <div class="review-label">Location</div>
+                            <div class="review-value" id="reviewLocation">Not provided</div>
+                        </div>
+
+                        <div class="review-row">
+                            <div class="review-label">Description</div>
+                            <div class="review-value" id="reviewDescription">Not provided</div>
+                        </div>
+
+                        <div class="review-row">
+                            <div class="review-label">Supporting photo</div>
+                            <div class="review-value" id="reviewImage">No photo attached</div>
+                        </div>
+                    </div>
+
+                    <div class="request-tip mb-3">
+                        <strong class="d-block mb-1">Ready to submit?</strong>
+                        <span class="text-muted small">
+                            Submitting sends your request to the portal. Keep the tracking code
+                            displayed after successful submission so you can follow its progress.
+                        </span>
+                    </div>
+                </section>
+
+                <!-- NAVIGATION BUTTONS -->
+                <div class="d-flex gap-2 request-actions mt-4">
+                    <button type="button"
+                            id="backButton"
+                            class="btn btn-outline-county"
+                            hidden>
+                        Back
+                    </button>
+
+                    <button type="button"
+                            id="nextButton"
+                            class="btn btn-county ms-auto">
+                        Next step
+                    </button>
+
+                    <button type="submit"
+                            id="submitButton"
+                            class="btn btn-county ms-auto"
+                            hidden>
                         Submit Request
                     </button>
 
                     <a href="{{ url_for('dashboard') }}"
+                       id="cancelButton"
                        class="btn btn-outline-county">
                         Cancel
                     </a>
@@ -260,4 +512,212 @@
         Please submit accurate information to help the relevant team respond appropriately.
     </p>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("serviceRequestForm");
+    const steps = Array.from(document.querySelectorAll(".form-step"));
+    const progressSteps = Array.from(
+        document.querySelectorAll("[data-progress-step]")
+    );
+
+    const progressBar = document.getElementById("requestProgressBar");
+    const progressTrack = document.getElementById("requestProgressTrack");
+    const backButton = document.getElementById("backButton");
+    const nextButton = document.getElementById("nextButton");
+    const submitButton = document.getElementById("submitButton");
+    const cancelButton = document.getElementById("cancelButton");
+
+    const titleInput = document.getElementById("title");
+    const categoryInput = document.getElementById("category");
+    const locationInput = document.getElementById("location");
+    const descriptionInput = document.getElementById("description");
+    const imageInput = document.getElementById("image");
+    const imageError = document.getElementById("imageError");
+
+    let currentStep = 0;
+    const totalSteps = steps.length;
+    const maximumImageSize = 5 * 1024 * 1024;
+    const allowedImageTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    function validateImage() {
+        const file = imageInput.files[0];
+
+        imageError.hidden = true;
+        imageInput.setCustomValidity("");
+
+        if (!file) {
+            return true;
+        }
+
+        const validType = allowedImageTypes.includes(file.type);
+        const validSize = file.size <= maximumImageSize;
+
+        if (!validType || !validSize) {
+            imageInput.setCustomValidity(
+                "Choose a JPG, PNG, or WEBP image no larger than 5 MB."
+            );
+
+            imageError.textContent = !validType
+                ? "Unsupported image format. Choose JPG, PNG, or WEBP."
+                : "The selected image is larger than 5 MB.";
+
+            imageError.hidden = false;
+            return false;
+        }
+
+        return true;
+    }
+
+    function validateStep(stepIndex) {
+        const fields = Array.from(
+            steps[stepIndex].querySelectorAll("input, select, textarea")
+        );
+
+        for (const field of fields) {
+            if (field === imageInput) {
+                if (!validateImage()) {
+                    imageInput.reportValidity();
+                    return false;
+                }
+                continue;
+            }
+
+            if (!field.checkValidity()) {
+                field.reportValidity();
+                field.focus();
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function updateReview() {
+        document.getElementById("reviewTitle").textContent =
+            titleInput.value.trim() || "Not provided";
+
+        document.getElementById("reviewCategory").textContent =
+            categoryInput.value || "Not selected";
+
+        document.getElementById("reviewLocation").textContent =
+            locationInput.value.trim() || "Not provided";
+
+        document.getElementById("reviewDescription").textContent =
+            descriptionInput.value.trim() || "Not provided";
+
+        const file = imageInput.files[0];
+
+        document.getElementById("reviewImage").textContent =
+            file ? file.name : "No photo attached";
+    }
+
+    function showStep(stepIndex) {
+        currentStep = stepIndex;
+
+        steps.forEach(function (step, index) {
+            step.hidden = index !== currentStep;
+        });
+
+        progressSteps.forEach(function (step, index) {
+            step.classList.toggle("active", index === currentStep);
+            step.classList.toggle("completed", index < currentStep);
+
+            const number = step.querySelector(".progress-step-number");
+
+            number.textContent = index < currentStep
+                ? "✓"
+                : String(index + 1);
+        });
+
+        progressBar.style.width =
+            ((currentStep + 1) / totalSteps * 100) + "%";
+
+        progressTrack.setAttribute(
+            "aria-valuenow",
+            String(currentStep + 1)
+        );
+
+        backButton.hidden = currentStep === 0;
+        nextButton.hidden = currentStep === totalSteps - 1;
+        submitButton.hidden = currentStep !== totalSteps - 1;
+
+        // Keep Cancel available on earlier steps, but avoid competing
+        // with the submit button on the final review step.
+        cancelButton.hidden = currentStep === totalSteps - 1;
+
+        if (currentStep === totalSteps - 1) {
+            updateReview();
+        }
+
+        const heading = steps[currentStep].querySelector("h3");
+
+        if (heading) {
+            heading.setAttribute("tabindex", "-1");
+            heading.focus();
+        }
+    }
+
+    nextButton.addEventListener("click", function () {
+        if (!validateStep(currentStep)) {
+            return;
+        }
+
+        if (currentStep < totalSteps - 1) {
+            showStep(currentStep + 1);
+        }
+    });
+
+    backButton.addEventListener("click", function () {
+        if (currentStep > 0) {
+            showStep(currentStep - 1);
+        }
+    });
+
+    imageInput.addEventListener("change", function () {
+        validateImage();
+
+        if (currentStep === totalSteps - 1) {
+            updateReview();
+        }
+    });
+
+    [titleInput, categoryInput, locationInput, descriptionInput]
+        .forEach(function (field) {
+            field.addEventListener("input", function () {
+                if (currentStep === totalSteps - 1) {
+                    updateReview();
+                }
+            });
+
+            field.addEventListener("change", function () {
+                if (currentStep === totalSteps - 1) {
+                    updateReview();
+                }
+            });
+        });
+
+    form.addEventListener("submit", function (event) {
+        // Validate all steps before sending the request to Flask.
+        for (let index = 0; index < totalSteps; index++) {
+            if (!validateStep(index)) {
+                event.preventDefault();
+                showStep(index);
+                validateStep(index);
+                return;
+            }
+        }
+
+        // The browser can now submit the original multipart form to Flask.
+        submitButton.disabled = true;
+        submitButton.textContent = "Submitting...";
+    });
+
+    showStep(0);
+});
+</script>
 {% endblock %}

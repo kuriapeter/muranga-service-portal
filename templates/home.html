@@ -4,464 +4,730 @@
 {% block content %}
 
 <style>
-    .home-hero {
+    :root {
+        --portal-green: #17633b;
+        --portal-dark: #104629;
+        --portal-bg: #f6f8f6;
+        --portal-text: #26372d;
+        --portal-muted: #68776e;
+        --portal-border: #e4eae5;
+    }
+
+    body {
+        background: var(--portal-bg);
+    }
+
+    .page-container {
+        max-width: 1240px;
+    }
+
+    .site-main {
+        padding-top: 1.2rem !important;
+        padding-bottom: 2rem;
+    }
+
+    /* HERO */
+    .portal-hero {
         position: relative;
+        isolation: isolate;
         overflow: hidden;
-        padding: clamp(2rem, 6vw, 4.5rem);
-        background: linear-gradient(135deg, #ffffff 0%, #edf7ef 100%);
-        border: 1px solid #e0ebe2;
-        border-radius: 24px;
-    }
-
-    .home-hero::after {
-        content: "";
-        position: absolute;
-        width: 240px;
-        height: 240px;
-        right: -90px;
-        top: -100px;
-        border-radius: 50%;
-        background: rgba(20, 83, 45, 0.06);
-        pointer-events: none;
-    }
-
-    .home-hero-content {
-        position: relative;
-        z-index: 1;
-        max-width: 760px;
-    }
-
-    .home-eyebrow {
-        display: inline-flex;
+        min-height: 265px;
+        display: flex;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 0.85rem;
-        color: #14532d;
-        background: #e1f1e5;
-        border: 1px solid #cce6d2;
-        border-radius: 999px;
-        font-size: 0.82rem;
-        font-weight: 700;
-        letter-spacing: 0.02em;
+        padding: clamp(1.5rem, 4vw, 2.8rem);
+        color: white;
+        background:
+            linear-gradient(
+                90deg,
+                rgba(9, 45, 27, .90),
+                rgba(12, 62, 36, .70),
+                rgba(10, 45, 28, .35)
+            ),
+            url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2000&q=85")
+            center 52% / cover no-repeat;
+        border-radius: 10px;
     }
 
-    .home-title {
-        margin-top: 1.35rem;
-        color: #173d27;
-        font-size: clamp(2rem, 5vw, 3.45rem);
-        line-height: 1.12;
+    .hero-content {
+        width: 100%;
+        max-width: 790px;
+    }
+
+    .hero-label {
+        display: inline-block;
+        margin-bottom: .65rem;
+        color: #d9f5e2;
+        font-size: .72rem;
         font-weight: 800;
-        letter-spacing: -0.045em;
+        letter-spacing: .09em;
+        text-transform: uppercase;
     }
 
-    .home-lead {
-        max-width: 680px;
-        margin-top: 1.25rem;
-        color: #47584c;
-        font-size: clamp(1rem, 2vw, 1.18rem);
-        line-height: 1.8;
+    .hero-title {
+        max-width: 740px;
+        margin: 0 0 .7rem;
+        font-size: clamp(1.9rem, 4vw, 3rem);
+        font-weight: 800;
+        line-height: 1.13;
+        letter-spacing: -.035em;
     }
 
-    .home-actions {
+    .hero-description {
+        max-width: 640px;
+        margin-bottom: 1.1rem;
+        color: rgba(255, 255, 255, .93);
+        font-size: .96rem;
+        line-height: 1.65;
+    }
+
+    .hero-actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.75rem;
-        margin-top: 1.75rem;
+        gap: .6rem;
     }
 
-    .home-actions .btn {
-        padding: 0.8rem 1.2rem;
+    .hero-actions .btn {
+        padding: .65rem 1rem;
+        border-radius: 5px;
+        font-size: .88rem;
+        font-weight: 700;
     }
 
-    .home-note {
-        margin-top: 1.25rem;
-        color: #68756c;
-        font-size: 0.88rem;
+    .btn-hero-primary {
+        color: var(--portal-dark);
+        background: white;
+        border: 1px solid white;
+    }
+
+    .btn-hero-primary:hover {
+        color: var(--portal-dark);
+        background: #e9f5ec;
+        border-color: #e9f5ec;
+    }
+
+    .btn-hero-outline {
+        color: white;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, .8);
+    }
+
+    .btn-hero-outline:hover {
+        color: var(--portal-dark);
+        background: white;
+        border-color: white;
+    }
+
+    /* SEARCH WRAPPER */
+    .service-search-wrap {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 800px;
+        margin: -25px auto 0;
+        padding: 0 1rem;
+        box-sizing: border-box;
+    }
+
+    /* FORCE SEARCH INPUT AND BUTTON ON ONE ROW */
+    .service-search.search-form-container {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: stretch !important;
+        gap: 6px;
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+        padding: 6px;
+        box-sizing: border-box;
+        background: white;
+        border: 1px solid #e1e8e2;
+        border-radius: 9px;
+        box-shadow: 0 10px 30px rgba(16, 70, 41, .10);
+    }
+
+    .service-search .search-icon {
+        display: flex;
+        flex: 0 0 auto !important;
+        align-items: center;
+        justify-content: center;
+        align-self: center;
+        padding-left: 5px;
+        color: var(--portal-green);
+        font-size: 1.25rem;
+    }
+
+    .service-search .search-input-wrapper {
+        position: relative;
+        display: flex !important;
+        flex: 1 1 0% !important;
+        align-items: center;
+        width: 0;
+        min-width: 0 !important;
+        overflow: hidden;
+    }
+
+    .service-search .search-input-wrapper input {
+        display: block !important;
+        flex: 1 1 0% !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: .7rem .2rem;
+        box-sizing: border-box;
+        color: var(--portal-text);
+        background: transparent;
+        border: 0;
+        outline: 0;
+        font-size: .95rem;
+    }
+
+    .service-search .search-input-wrapper input:focus-visible {
+        outline: 2px solid #83bd97;
+        outline-offset: -2px;
+    }
+
+    .service-search .search-button-element {
+        display: inline-flex !important;
+        flex: 0 0 auto !important;
+        flex-shrink: 0 !important;
+        align-items: center;
+        justify-content: center;
+        align-self: stretch;
+        width: auto !important;
+        min-width: max-content;
+        margin: 0;
+        padding: .7rem 1.1rem;
+        box-sizing: border-box;
+        white-space: nowrap !important;
+        overflow-wrap: normal;
+        writing-mode: horizontal-tb;
+        color: white;
+        background: var(--portal-green);
+        border: 0;
+        border-radius: 6px;
+        font-size: .9rem;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .service-search .search-button-element:hover {
+        background: var(--portal-dark);
+    }
+
+    /* SERVICE DIRECTORY */
+    .services-section {
+        margin-top: 2.7rem;
+    }
+
+    .section-topline {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .section-kicker {
+        margin-bottom: .25rem;
+        color: var(--portal-green);
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: .09em;
+        text-transform: uppercase;
     }
 
     .section-heading {
-        color: #203b2a;
+        margin: 0;
+        color: var(--portal-text);
+        font-size: clamp(1.45rem, 3vw, 1.9rem);
         font-weight: 800;
-        letter-spacing: -0.02em;
+        letter-spacing: -.025em;
     }
 
-    .feature-card {
+    .section-description {
+        margin: .4rem 0 0;
+        color: var(--portal-muted);
+        font-size: .9rem;
+        line-height: 1.6;
+    }
+
+    .service-count {
+        flex-shrink: 0;
+        color: var(--portal-muted);
+        font-size: .8rem;
+    }
+
+    /* CENTERED, RESPONSIVE SERVICE CARDS */
+    #serviceGrid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-right: 0;
+        margin-left: 0;
+    }
+
+    #serviceGrid .service-item {
+        display: flex;
+        min-width: 0;
+        padding: 0 .5rem;
+        margin: 0 0 1rem;
+        box-sizing: border-box;
+    }
+
+    .service-item[hidden] {
+        display: none !important;
+    }
+
+    .service-tile {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        height: 100%;
-        padding: 1.5rem;
-        background: #fff;
-        border: 1px solid #e4eae5;
-        border-radius: 17px;
-        box-shadow: 0 5px 20px rgba(30, 50, 35, 0.04);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .feature-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 28px rgba(30, 50, 35, 0.08);
-    }
-
-    .feature-icon {
-        display: inline-flex;
-        width: 50px;
-        height: 50px;
-        flex-shrink: 0;
         align-items: center;
         justify-content: center;
-        margin-bottom: 1.1rem;
-        color: #14532d;
-        background: #eaf5ed;
+        gap: .9rem;
+        width: 100%;
+        min-height: 155px;
+        padding: 1.2rem .8rem;
+        box-sizing: border-box;
+        color: var(--portal-text);
+        text-align: center;
+        text-decoration: none;
+        background: white;
+        border: 1px solid var(--portal-border);
+        border-radius: 10px;
+        transition:
+            border-color .18s ease,
+            box-shadow .18s ease,
+            transform .18s ease;
+    }
+
+    .service-tile:hover {
+        color: var(--portal-dark);
+        border-color: #a9ceb4;
+        box-shadow: 0 7px 20px rgba(25, 70, 42, .08);
+        transform: translateY(-3px);
+    }
+
+    .service-tile:focus-visible {
+        outline: 3px solid #83bd97;
+        outline-offset: 3px;
+    }
+
+    .service-icon {
+        display: flex;
+        flex: 0 0 58px;
+        align-items: center;
+        justify-content: center;
+        width: 58px;
+        height: 58px;
+        background: #edf6ef;
+        border: 1px solid #e0eee3;
         border-radius: 14px;
-        font-size: 1.4rem;
-        font-weight: 800;
+        font-size: 1.9rem;
+        line-height: 1;
     }
 
-    .feature-title {
-        margin-bottom: 0.65rem;
-        color: #243329;
-        font-size: 1.08rem;
+    .service-title {
+        max-width: 190px;
+        margin: 0;
+        color: inherit;
+        font-size: .95rem;
         font-weight: 750;
+        line-height: 1.4;
     }
 
-    .feature-description {
-        flex-grow: 1;
-        margin-bottom: 1rem;
-        color: #68756c;
-        line-height: 1.75;
+    .no-results {
+        padding: 2rem 1rem;
+        color: var(--portal-muted);
+        text-align: center;
+        background: white;
+        border: 1px solid var(--portal-border);
+        border-radius: 7px;
     }
 
-    .category-card .btn {
-        margin-top: auto;
+    .no-results[hidden] {
+        display: none !important;
     }
 
-    .home-bottom {
-        padding: 1.5rem;
-        background: #173d27;
-        color: #fff;
-        border-radius: 18px;
+    .portal-note {
+        margin-top: 1.7rem;
+        padding-top: 1rem;
+        color: var(--portal-muted);
+        border-top: 1px solid var(--portal-border);
+        font-size: .8rem;
+        text-align: center;
     }
 
-    .home-bottom p {
-        margin-bottom: 0;
-        color: rgba(255, 255, 255, 0.8);
-        line-height: 1.7;
+    /* LARGE DESKTOP: FOUR COLUMNS */
+    @media (min-width: 1200px) {
+        #serviceGrid .service-item {
+            flex: 0 0 25%;
+            max-width: 25%;
+        }
     }
 
-    @media (max-width: 575.98px) {
-        .home-hero {
-            padding: 1.5rem;
-            border-radius: 18px;
+    /* TABLET: THREE COLUMNS */
+    @media (min-width: 768px) and (max-width: 1199.98px) {
+        #serviceGrid .service-item {
+            flex: 0 0 33.333333%;
+            max-width: 33.333333%;
+        }
+    }
+
+    /* MOBILE */
+    @media (max-width: 767.98px) {
+        .site-main {
+            padding-top: .6rem !important;
         }
 
-        .home-actions {
+        .portal-hero {
+            min-height: 0;
+            padding: 1.6rem 1.1rem;
+            border-radius: 8px;
+            background-position: center;
+        }
+
+        .hero-title {
+            font-size: clamp(1.8rem, 7vw, 2.4rem);
+        }
+
+        .hero-description {
+            font-size: .9rem;
+        }
+
+        .hero-actions {
             flex-direction: column;
         }
 
-        .home-actions .btn {
+        .hero-actions .btn {
             width: 100%;
         }
 
-        .feature-card {
-            padding: 1.25rem;
+        .service-search-wrap {
+            margin-top: 1rem;
+            padding: 0;
+        }
+
+        .service-search.search-form-container {
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            gap: 3px;
+            padding: 5px;
+        }
+
+        .service-search .search-icon {
+            padding-left: 3px;
+            font-size: 1rem;
+        }
+
+        .service-search .search-input-wrapper {
+            flex: 1 1 0% !important;
+            min-width: 0 !important;
+        }
+
+        .service-search .search-input-wrapper input {
+            padding: 10px 2px;
+            font-size: 13px;
+        }
+
+        .service-search .search-button-element {
+            flex: 0 0 auto !important;
+            flex-shrink: 0 !important;
+            padding: 10px 11px;
+            font-size: 13px;
+        }
+
+        .services-section {
+            margin-top: 2rem;
+        }
+
+        .section-topline {
+            align-items: flex-start;
+        }
+
+        #serviceGrid .service-item {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+
+        /* Center the seventh card */
+        #serviceGrid .service-item:last-child:nth-child(odd) {
+            margin-left: 25%;
+        }
+
+        .service-tile {
+            min-height: 135px;
+            padding: 1rem .5rem;
+            gap: .7rem;
+        }
+
+        .service-icon {
+            flex-basis: 50px;
+            width: 50px;
+            height: 50px;
+            font-size: 1.65rem;
+        }
+
+        .service-title {
+            font-size: .87rem;
+            overflow-wrap: anywhere;
+        }
+    }
+
+    @media (max-width: 360px) {
+        .service-search.search-form-container {
+            gap: 2px;
+        }
+
+        .service-search .search-icon {
+            padding-left: 2px;
+        }
+
+        .service-search .search-input-wrapper input {
+            font-size: 12px;
+        }
+
+        .service-search .search-button-element {
+            padding: 10px 8px;
+            font-size: 12px;
         }
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .feature-card {
+        .service-tile {
             transition: none;
         }
 
-        .feature-card:hover {
+        .service-tile:hover {
             transform: none;
         }
     }
 </style>
 
-<section class="home-hero">
-    <div class="home-hero-content">
+<!-- HERO -->
+<section class="portal-hero" aria-labelledby="portal-title">
+    <div class="hero-content">
+        <div class="hero-label">
+            Murang'a County · Digital Public Services
+        </div>
 
-        <span class="home-eyebrow">
-            <span aria-hidden="true">●</span>
-            DIGITAL PUBLIC SERVICES
-        </span>
-
-        <h1 class="home-title">
-            Your voice matters.<br>
-            Your service request starts here.
+        <h1 class="hero-title" id="portal-title">
+            Your county. Your voice. Better public services.
         </h1>
 
-        <p class="home-lead">
-            Submit public service concerns, track their progress,
-            and stay informed through the Murang'a County Public
-            Service Request System.
+        <p class="hero-description">
+            Submit public service concerns, track your requests,
+            and follow their progress through the Murang'a County
+            Public Service Request System.
         </p>
 
-        <p class="text-secondary mb-0">
-            A simple digital way to report issues such as damaged roads,
-            water concerns, waste collection, and other county services.
-        </p>
-
-        <div class="home-actions">
+        <div class="hero-actions">
             {% if current_user.is_authenticated %}
-                <a class="btn btn-county btn-lg"
-                   href="{{ url_for('new_request') }}">
-                    Submit a Request <span aria-hidden="true">→</span>
-                </a>
-
-                <a class="btn btn-outline-county btn-lg"
-                   href="{{ url_for('dashboard') }}">
-                    View My Dashboard
-                </a>
+                {% if current_user.role == 'citizen' %}
+                    <a class="btn btn-hero-primary"
+                       href="{{ url_for('new_request') }}">
+                        Submit a Request →
+                    </a>
+                    <a class="btn btn-hero-outline"
+                       href="{{ url_for('dashboard') }}">
+                        My Dashboard
+                    </a>
+                {% else %}
+                    <a class="btn btn-hero-primary"
+                       href="{{ url_for('dashboard') }}">
+                        Open Dashboard →
+                    </a>
+                {% endif %}
             {% else %}
-                <a class="btn btn-county btn-lg"
+                <a class="btn btn-hero-primary"
                    href="{{ url_for('register') }}">
-                    Create an Account <span aria-hidden="true">→</span>
+                    Create an Account →
                 </a>
-
-                <a class="btn btn-outline-county btn-lg"
+                <a class="btn btn-hero-outline"
                    href="{{ url_for('login') }}">
                     Sign In
                 </a>
             {% endif %}
 
-            <a class="btn btn-light btn-lg border"
+            <a class="btn btn-hero-outline"
                href="{{ url_for('track_request') }}">
                 Track a Request
             </a>
         </div>
-
-        <p class="home-note">
-            <span aria-hidden="true">✓</span>
-            Request tracking · Online access · Status updates
-        </p>
     </div>
 </section>
 
-<!-- HOW IT WORKS -->
-<section class="mt-5" aria-labelledby="services-heading">
-    <div class="mb-4">
-        <p class="text-uppercase small fw-bold mb-2"
-           style="color: #287044; letter-spacing: 0.09em;">
-            HOW IT WORKS
-        </p>
+<!-- SEARCH -->
+<div class="service-search-wrap">
+    <form
+        class="service-search search-form-container"
+        id="serviceSearchForm"
+        role="search"
+    >
+        <span class="search-icon" aria-hidden="true">⌕</span>
 
-        <h2 class="section-heading h3" id="services-heading">
-            Public services, made easier
-        </h2>
-
-        <p class="text-secondary mb-0">
-            Follow a straightforward process to report and monitor
-            public service concerns.
-        </p>
-    </div>
-
-    <div class="row g-3 g-lg-4">
-
-        <div class="col-12 col-md-4">
-            <article class="feature-card">
-                <div class="feature-icon" aria-hidden="true">01</div>
-                <h3 class="feature-title">Submit a Request</h3>
-                <p class="feature-description">
-                    Describe a public service issue, provide its
-                    location, and optionally attach an evidence photo.
-                </p>
-            </article>
+        <div class="search-input-wrapper">
+            <input
+                id="serviceSearch"
+                type="search"
+                placeholder="Search county services..."
+                aria-label="Search county service categories"
+                autocomplete="off"
+            >
         </div>
 
-        <div class="col-12 col-md-4">
-            <article class="feature-card">
-                <div class="feature-icon" aria-hidden="true">02</div>
-                <h3 class="feature-title">Track Progress</h3>
-                <p class="feature-description">
-                    Use your tracking code or dashboard to check
-                    the recorded status of your service request.
-                </p>
-            </article>
-        </div>
+        <button
+            type="submit"
+            class="search-button-element"
+        >
+            Search
+        </button>
+    </form>
+</div>
 
-        <div class="col-12 col-md-4">
-            <article class="feature-card">
-                <div class="feature-icon" aria-hidden="true">03</div>
-                <h3 class="feature-title">Receive Updates</h3>
-                <p class="feature-description">
-                    Follow status changes and receive email
-                    notifications when updates are sent by the system.
-                </p>
-            </article>
-        </div>
-
-    </div>
-</section>
-
-<!-- SERVICE CATEGORIES -->
-<section class="mt-5" aria-labelledby="categories-heading">
-    <div class="mb-4">
-        <p class="text-uppercase small fw-bold mb-2"
-           style="color: #287044; letter-spacing: 0.09em;">
-            REPORT AN ISSUE
-        </p>
-
-        <h2 class="section-heading h3" id="categories-heading">
-            Explore Service Categories
-        </h2>
-
-        <p class="text-secondary mb-0">
-            Choose the category that best describes the public
-            service issue you want to report.
-        </p>
-    </div>
-
-    <div class="row g-3 g-lg-4">
-
-        <!-- Roads and Transport -->
-        <div class="col-12 col-sm-6 col-lg-4">
-            <article class="feature-card category-card">
-                <div class="feature-icon" aria-hidden="true">🛣️</div>
-                <h3 class="feature-title">Roads and Transport</h3>
-                <p class="feature-description">
-                    Report potholes, damaged roads, blocked drainage,
-                    and transport-related concerns.
-                </p>
-                <a class="btn btn-outline-county"
-                   href="{{ url_for('new_request', category='Roads and Transport') }}">
-                    Report an Issue →
-                </a>
-            </article>
-        </div>
-
-        <!-- Water and Sanitation -->
-        <div class="col-12 col-sm-6 col-lg-4">
-            <article class="feature-card category-card">
-                <div class="feature-icon" aria-hidden="true">💧</div>
-                <h3 class="feature-title">Water and Sanitation</h3>
-                <p class="feature-description">
-                    Report water leaks, supply interruptions,
-                    and sanitation problems.
-                </p>
-                <a class="btn btn-outline-county"
-                   href="{{ url_for('new_request', category='Water and Sanitation') }}">
-                    Report an Issue →
-                </a>
-            </article>
-        </div>
-
-        <!-- Health Services -->
-        <div class="col-12 col-sm-6 col-lg-4">
-            <article class="feature-card category-card">
-                <div class="feature-icon" aria-hidden="true">🏥</div>
-                <h3 class="feature-title">Health Services</h3>
-                <p class="feature-description">
-                    Report concerns involving county health facilities
-                    and public health services.
-                </p>
-                <a class="btn btn-outline-county"
-                   href="{{ url_for('new_request', category='Health Services') }}">
-                    Report an Issue →
-                </a>
-            </article>
-        </div>
-
-        <!-- Environment and Waste -->
-        <div class="col-12 col-sm-6 col-lg-4">
-            <article class="feature-card category-card">
-                <div class="feature-icon" aria-hidden="true">🌿</div>
-                <h3 class="feature-title">Environment and Waste</h3>
-                <p class="feature-description">
-                    Report uncollected waste, overflowing bins,
-                    and environmental concerns.
-                </p>
-                <a class="btn btn-outline-county"
-                   href="{{ url_for('new_request', category='Environment and Waste') }}">
-                    Report an Issue →
-                </a>
-            </article>
-        </div>
-
-        <!-- Business and Licensing -->
-        <div class="col-12 col-sm-6 col-lg-4">
-            <article class="feature-card category-card">
-                <div class="feature-icon" aria-hidden="true">🏪</div>
-                <h3 class="feature-title">Business and Licensing</h3>
-                <p class="feature-description">
-                    Report concerns about business permits,
-                    licences, and county business services.
-                </p>
-                <a class="btn btn-outline-county"
-                   href="{{ url_for('new_request', category='Business and Licensing') }}">
-                    Report an Issue →
-                </a>
-            </article>
-        </div>
-
-        <!-- Land and Housing -->
-        <div class="col-12 col-sm-6 col-lg-4">
-            <article class="feature-card category-card">
-                <div class="feature-icon" aria-hidden="true">🏠</div>
-                <h3 class="feature-title">Land and Housing</h3>
-                <p class="feature-description">
-                    Report land and housing concerns related
-                    to county services.
-                </p>
-                <a class="btn btn-outline-county"
-                   href="{{ url_for('new_request', category='Land and Housing') }}">
-                    Report an Issue →
-                </a>
-            </article>
-        </div>
-
-        <!-- Other Services -->
-        <div class="col-12 col-sm-6 col-lg-4">
-            <article class="feature-card category-card">
-                <div class="feature-icon" aria-hidden="true">📋</div>
-                <h3 class="feature-title">Other Services</h3>
-                <p class="feature-description">
-                    Report other public service concerns that
-                    do not fit the categories listed above.
-                </p>
-                <a class="btn btn-outline-county"
-                   href="{{ url_for('new_request', category='Other') }}">
-                    Report an Issue →
-                </a>
-            </article>
-        </div>
-
-    </div>
-</section>
-
-<!-- CALL TO ACTION -->
-<section class="home-bottom mt-5">
-    <div class="row align-items-center g-3">
-        <div class="col-12 col-lg-8">
-            <h2 class="h4 fw-bold mb-2">
-                Help make public service concerns visible.
+<!-- SERVICE DIRECTORY -->
+<section class="services-section" aria-labelledby="categories-heading">
+    <div class="section-topline">
+        <div>
+            <p class="section-kicker">Service directory</p>
+            <h2 class="section-heading" id="categories-heading">
+                Find a county service
             </h2>
-            <p>
-                Submit clear information about an issue so it can
-                be recorded and followed up through the portal.
+            <p class="section-description">
+                Choose a category to submit a public service concern.
             </p>
         </div>
 
-        <div class="col-12 col-lg-4 text-lg-end">
-            {% if current_user.is_authenticated %}
-                <a class="btn btn-light fw-semibold px-4 py-2"
-                   href="{{ url_for('new_request') }}">
-                    Start a Request
-                </a>
-            {% else %}
-                <a class="btn btn-light fw-semibold px-4 py-2"
-                   href="{{ url_for('register') }}">
-                    Get Started
-                </a>
-            {% endif %}
+        <span class="service-count" id="serviceCount" aria-live="polite">
+            7 categories
+        </span>
+    </div>
+
+    <div class="row g-3" id="serviceGrid">
+
+        <div class="col-6 col-md-4 col-xl-3 service-item"
+             data-search="roads transport potholes damaged roads drainage">
+            <a class="service-tile"
+               href="{{ url_for('new_request', category='Roads and Transport') }}">
+                <span class="service-icon" aria-hidden="true">🛣️</span>
+                <h3 class="service-title">Roads and Transport</h3>
+            </a>
         </div>
+
+        <div class="col-6 col-md-4 col-xl-3 service-item"
+             data-search="water sanitation supply leaks sewage">
+            <a class="service-tile"
+               href="{{ url_for('new_request', category='Water and Sanitation') }}">
+                <span class="service-icon" aria-hidden="true">💧</span>
+                <h3 class="service-title">Water and Sanitation</h3>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-xl-3 service-item"
+             data-search="health hospital clinic medical public health facilities">
+            <a class="service-tile"
+               href="{{ url_for('new_request', category='Health Services') }}">
+                <span class="service-icon" aria-hidden="true">🏥</span>
+                <h3 class="service-title">Health Services</h3>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-xl-3 service-item"
+             data-search="environment waste rubbish garbage pollution">
+            <a class="service-tile"
+               href="{{ url_for('new_request', category='Environment and Waste') }}">
+                <span class="service-icon" aria-hidden="true">🌿</span>
+                <h3 class="service-title">Environment and Waste</h3>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-xl-3 service-item"
+             data-search="business licensing permits licences trade">
+            <a class="service-tile"
+               href="{{ url_for('new_request', category='Business and Licensing') }}">
+                <span class="service-icon" aria-hidden="true">🏪</span>
+                <h3 class="service-title">Business and Licensing</h3>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-xl-3 service-item"
+             data-search="land housing buildings property">
+            <a class="service-tile"
+               href="{{ url_for('new_request', category='Land and Housing') }}">
+                <span class="service-icon" aria-hidden="true">🏠</span>
+                <h3 class="service-title">Land and Housing</h3>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-xl-3 service-item"
+             data-search="other general public services miscellaneous">
+            <a class="service-tile"
+               href="{{ url_for('new_request', category='Other') }}">
+                <span class="service-icon" aria-hidden="true">📋</span>
+                <h3 class="service-title">Other Services</h3>
+            </a>
+        </div>
+
+    </div>
+
+    <div class="no-results mt-3" id="noResults" hidden>
+        <strong>No matching service found.</strong>
+        <p class="mb-0 mt-1">
+            Try another search, such as roads, water or health.
+        </p>
     </div>
 </section>
 
-<p class="text-center text-secondary small mt-4 mb-0">
-    Demonstration project for digital public service delivery.
+<p class="portal-note">
+    Murang'a County Public Service Request System · Demonstration project
 </p>
 
+<script>
+(function () {
+    const input = document.getElementById("serviceSearch");
+    const form = document.getElementById("serviceSearchForm");
+    const grid = document.getElementById("serviceGrid");
+    const count = document.getElementById("serviceCount");
+    const noResults = document.getElementById("noResults");
+
+    if (!input || !form || !grid || !count || !noResults) {
+        return;
+    }
+
+    const items = Array.from(grid.querySelectorAll(".service-item"));
+
+    function filterServices() {
+        const query = input.value.trim().toLowerCase();
+        let visible = 0;
+
+        items.forEach(function (item) {
+            const text = (
+                item.innerText + " " + (item.dataset.search || "")
+            ).toLowerCase();
+
+            const matches = text.includes(query);
+            item.hidden = !matches;
+
+            if (matches) {
+                visible++;
+            }
+        });
+
+        count.textContent =
+            visible + (visible === 1 ? " category" : " categories");
+
+        noResults.hidden = visible !== 0;
+    }
+
+    input.addEventListener("input", filterServices);
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        filterServices();
+    });
+})();
+</script>
+
 {% endblock %}
-```

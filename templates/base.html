@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>{{ page_title or "Murang'a Public Service Portal" }}</title>
-    <meta name="theme-color" content="#14532d">
+    <meta name="theme-color" content="#ffffff">
     <meta name="description"
           content="Murang'a County Public Service Request System. Submit, track and follow up on public service requests.">
 
@@ -33,19 +33,18 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            margin: 0;
             background: var(--page-bg);
             color: var(--text-main);
             font-family: system-ui, -apple-system, "Segoe UI",
                          Roboto, Arial, sans-serif;
         }
 
+        /* Clean white navigation bar */
         .site-navbar {
-            background: linear-gradient(
-                115deg,
-                var(--county-green-dark),
-                var(--county-green)
-            );
-            box-shadow: 0 3px 14px rgba(16, 63, 36, 0.13);
+            background: #ffffff;
+            border-bottom: 1px solid var(--card-border);
+            box-shadow: 0 3px 14px rgba(16, 63, 36, 0.05);
         }
 
         .navbar-brand {
@@ -57,15 +56,16 @@
         }
 
         .brand-mark {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.14);
-            border: 1px solid rgba(255, 255, 255, 0.24);
+            background: var(--county-green-light);
+            border: 1px solid #d5e8da;
+            color: var(--county-green);
             font-size: 0.8rem;
             font-weight: 800;
             letter-spacing: 0.04em;
@@ -73,6 +73,7 @@
 
         .brand-title {
             display: block;
+            color: var(--county-green-dark);
             font-size: 1rem;
             font-weight: 750;
         }
@@ -80,31 +81,32 @@
         .brand-subtitle {
             display: block;
             margin-top: 2px;
-            color: rgba(255, 255, 255, 0.76);
+            color: var(--text-muted);
             font-size: 0.7rem;
             font-weight: 400;
         }
 
         .site-navbar .navbar-nav .nav-link,
         .site-navbar .utility-link {
-            color: rgba(255, 255, 255, 0.9);
+            color: #34443a;
             font-size: 0.92rem;
-            font-weight: 550;
+            font-weight: 600;
             text-decoration: none;
             transition: color 0.2s ease;
         }
 
         .site-navbar .navbar-nav .nav-link:hover,
         .site-navbar .utility-link:hover {
-            color: #ffffff;
+            color: var(--county-green);
         }
 
         .site-navbar .navbar-toggler {
-            border-color: rgba(255, 255, 255, 0.4);
+            border-color: #cbd8ce;
+            background: var(--county-green);
         }
 
         .site-navbar .navbar-toggler:focus {
-            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0 0.2rem rgba(20, 83, 45, 0.15);
         }
 
         /* Department identity badge */
@@ -114,17 +116,17 @@
             gap: 0.45rem;
             max-width: 100%;
             padding: 0.4rem 0.7rem;
-            border: 1px solid rgba(255, 255, 255, 0.35);
+            border: 1px solid #d5e8da;
             border-radius: 999px;
-            background: rgba(255, 255, 255, 0.12);
-            color: #ffffff;
+            background: var(--county-green-light);
+            color: var(--county-green-dark);
             font-size: 0.8rem;
             font-weight: 600;
             line-height: 1.4;
         }
 
         .department-identity .department-dot {
-            color: #86efac;
+            color: #198754;
             font-size: 0.8rem;
             flex-shrink: 0;
         }
@@ -135,7 +137,7 @@
 
         .department-identity .department-label {
             display: block;
-            color: rgba(255, 255, 255, 0.75);
+            color: var(--text-muted);
             font-size: 0.68rem;
             font-weight: 400;
         }
@@ -145,18 +147,32 @@
                 margin-top: 0.4rem;
                 margin-bottom: 0.4rem;
             }
+
+            .site-navbar .navbar-collapse {
+                padding-top: 0.5rem;
+                padding-bottom: 0.75rem;
+            }
+
+            .site-navbar .navbar-nav {
+                align-items: stretch !important;
+            }
+
+            .site-navbar .navbar-nav .nav-link {
+                padding: 0.65rem 0.25rem;
+            }
         }
 
+        /* Buttons */
         .btn-county {
-            color: #fff;
+            color: #ffffff;
             background: var(--county-green);
-            border-color: var(--county-green);
+            border: 1px solid var(--county-green);
             font-weight: 600;
         }
 
         .btn-county:hover,
         .btn-county:focus {
-            color: #fff;
+            color: #ffffff;
             background: var(--county-green-dark);
             border-color: var(--county-green-dark);
         }
@@ -167,9 +183,11 @@
             font-weight: 600;
         }
 
-        .btn-outline-county:hover {
-            color: #fff;
+        .btn-outline-county:hover,
+        .btn-outline-county:focus {
+            color: #ffffff;
             background: var(--county-green);
+            border-color: var(--county-green);
         }
 
         main.site-main {
@@ -181,15 +199,17 @@
             max-width: 1180px;
         }
 
+        /* Alerts and notifications */
         .alert {
             border: 0;
             border-radius: 12px;
             box-shadow: 0 3px 12px rgba(30, 50, 35, 0.04);
         }
 
+        /* Footer */
         .site-footer {
             margin-top: 2rem;
-            background: #fff;
+            background: #ffffff;
             border-top: 1px solid var(--card-border);
         }
 
@@ -203,7 +223,7 @@
             font-size: 0.85rem;
         }
 
-        /* Consistent styling for common Bootstrap components */
+        /* Consistent Bootstrap component styling */
         .card {
             border-color: var(--card-border);
             border-radius: 16px;
@@ -211,7 +231,7 @@
         }
 
         .card-header {
-            background: #fff;
+            background: #ffffff;
             border-bottom-color: var(--card-border);
         }
 
@@ -240,6 +260,7 @@
             max-width: 100%;
         }
 
+        /* Mobile responsiveness */
         @media (max-width: 575.98px) {
             .brand-title {
                 font-size: 0.9rem;
@@ -252,6 +273,7 @@
             .brand-mark {
                 width: 36px;
                 height: 36px;
+                border-radius: 10px;
             }
 
             .page-container {
@@ -291,7 +313,7 @@
 </head>
 
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark site-navbar">
+<nav class="navbar navbar-expand-lg navbar-light site-navbar">
     <div class="container page-container">
 
         <a class="navbar-brand" href="{{ url_for('home') }}">
@@ -329,7 +351,6 @@
                         </a>
                     </li>
 
-                    {# Department badge for department administrators #}
                     {% if current_user.role == "department_admin"
                           and current_user.department %}
                         <li class="nav-item">
@@ -349,7 +370,6 @@
                         </li>
                     {% endif %}
 
-                    {# Admin link for authorized admin roles #}
                     {% if current_user.role in
                           ["admin", "overall_admin", "department_admin"] %}
                         <li class="nav-item">
@@ -364,14 +384,16 @@
                         <form method="post"
                               action="{{ url_for('logout') }}"
                               class="d-inline">
-                            <input type="hidden" name="csrf_token"
+                            <input type="hidden"
+                                   name="csrf_token"
                                    value="{{ csrf_token() }}">
-                            <button class="btn btn-light btn-sm px-3"
+                            <button class="btn btn-county btn-sm px-3"
                                     type="submit">
                                 Log out
                             </button>
                         </form>
                     </li>
+
                 {% else %}
                     <li class="nav-item">
                         <a class="nav-link"
@@ -381,7 +403,7 @@
                     </li>
 
                     <li class="nav-item ms-lg-2">
-                        <a class="btn btn-light btn-sm px-3"
+                        <a class="btn btn-county btn-sm px-3"
                            href="{{ url_for('register') }}">
                             Create account
                         </a>
@@ -401,7 +423,8 @@
                 <div class="alert alert-{{ category }} alert-dismissible fade show"
                      role="alert">
                     {{ message }}
-                    <button type="button" class="btn-close"
+                    <button type="button"
+                            class="btn-close"
                             data-bs-dismiss="alert"
                             aria-label="Close"></button>
                 </div>
@@ -435,5 +458,7 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+{% block scripts %}{% endblock %}
 </body>
 </html>
